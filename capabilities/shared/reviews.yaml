@@ -1,0 +1,149 @@
+naftiko: "1.0.0-alpha1"
+
+info:
+  label: "TrustRadius Reviews API"
+  description: "Provides access to verified B2B software user reviews with detailed content, ratings, and reviewer information."
+  tags:
+    - B2B Software Reviews
+    - Reviews
+    - Buyer Intelligence
+  created: "2026-05-03"
+  modified: "2026-05-03"
+
+binds:
+  - namespace: env
+    keys:
+      TRUSTRADIUS_API_KEY: TRUSTRADIUS_API_KEY
+
+capability:
+  consumes:
+    - type: http
+      namespace: trustradius-reviews
+      baseUri: https://api.trustradius.com/v1
+      description: "TrustRadius verified review data."
+      authentication:
+        type: apikey
+        key: X-API-Key
+        value: "{{TRUSTRADIUS_API_KEY}}"
+        placement: header
+      resources:
+        - name: reviews
+          path: /reviews
+          description: "Verified user reviews"
+          operations:
+            - name: list-reviews
+              method: GET
+              description: "List verified reviews with filtering by product, category, industry, and rating."
+              inputParameters:
+                - name: product
+                  in: query
+                  type: string
+                  required: false
+                - name: category
+                  in: query
+                  type: string
+                  required: false
+                - name: industry
+                  in: query
+                  type: string
+                  required: false
+                - name: companySize
+                  in: query
+                  type: string
+                  required: false
+                - name: minScore
+                  in: query
+                  type: integer
+                  required: false
+                - name: page
+                  in: query
+                  type: integer
+                  required: false
+                - name: perPage
+                  in: query
+                  type: integer
+                  required: false
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+        - name: review
+          path: /reviews/{reviewId}
+          description: "Individual review"
+          operations:
+            - name: get-review
+              method: GET
+              description: "Get full content of a specific review."
+              inputParameters:
+                - name: reviewId
+                  in: path
+                  type: string
+                  required: true
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+
+  exposes:
+    - type: rest
+      port: 8101
+      namespace: trustradius-reviews-api
+      resources:
+        - path: /v1/reviews
+          name: reviews
+          description: "List reviews"
+          operations:
+            - method: GET
+              name: list-reviews
+              description: "List verified reviews"
+              call: "trustradius-reviews.list-reviews"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+        - path: /v1/reviews/{reviewId}
+          name: review
+          description: "Get review"
+          operations:
+            - method: GET
+              name: get-review
+              description: "Get review details"
+              call: "trustradius-reviews.get-review"
+              with:
+                reviewId: "rest.reviewId"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+
+    - type: mcp
+      port: 9101
+      namespace: trustradius-reviews-mcp
+      transport: http
+      tools:
+        - name: list-reviews
+          description: "List verified B2B software reviews with filtering by product, category, industry, company size, and minimum score."
+          hints:
+            readOnly: true
+            openWorld: true
+          call: "trustradius-reviews.list-reviews"
+          with:
+            product: "tools.product"
+            category: "tools.category"
+            industry: "tools.industry"
+            companySize: "tools.companySize"
+            minScore: "tools.minScore"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: get-review
+          description: "Get the full text and ratings of a specific verified B2B software review."
+          hints:
+            readOnly: true
+            openWorld: false
+          call: "trustradius-reviews.get-review"
+          with:
+            reviewId: "tools.reviewId"
+          outputParameters:
+            - type: object
+              mapping: "$."

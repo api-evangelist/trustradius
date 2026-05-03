@@ -1,0 +1,218 @@
+naftiko: "1.0.0-alpha1"
+
+info:
+  label: "TrustRadius Public API - Products and Categories"
+  description: "Provides access to B2B software product profiles, TrustRadius scores, and software categories."
+  tags:
+    - B2B Software Reviews
+    - Product Reviews
+    - Software Categories
+    - Buyer Intelligence
+  created: "2026-05-03"
+  modified: "2026-05-03"
+
+binds:
+  - namespace: env
+    keys:
+      TRUSTRADIUS_API_KEY: TRUSTRADIUS_API_KEY
+
+capability:
+  consumes:
+    - type: http
+      namespace: trustradius-products
+      baseUri: https://api.trustradius.com/v1
+      description: "TrustRadius product and category data."
+      authentication:
+        type: apikey
+        key: X-API-Key
+        value: "{{TRUSTRADIUS_API_KEY}}"
+        placement: header
+      resources:
+        - name: products
+          path: /products
+          description: "B2B software product listings"
+          operations:
+            - name: list-products
+              method: GET
+              description: "Retrieve B2B software products with ratings and review counts."
+              inputParameters:
+                - name: category
+                  in: query
+                  type: string
+                  required: false
+                - name: page
+                  in: query
+                  type: integer
+                  required: false
+                - name: perPage
+                  in: query
+                  type: integer
+                  required: false
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+        - name: product
+          path: /products/{productSlug}
+          description: "Individual product details"
+          operations:
+            - name: get-product
+              method: GET
+              description: "Get detailed product profile including TrustRadius score."
+              inputParameters:
+                - name: productSlug
+                  in: path
+                  type: string
+                  required: true
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+        - name: product-ratings
+          path: /products/{productSlug}/ratings
+          description: "Product aggregate ratings"
+          operations:
+            - name: get-product-ratings
+              method: GET
+              description: "Get aggregate rating breakdown for a product."
+              inputParameters:
+                - name: productSlug
+                  in: path
+                  type: string
+                  required: true
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+        - name: categories
+          path: /categories
+          description: "Software categories"
+          operations:
+            - name: list-categories
+              method: GET
+              description: "List all software categories on TrustRadius."
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+        - name: category
+          path: /categories/{categorySlug}
+          description: "Category details with top products"
+          operations:
+            - name: get-category
+              method: GET
+              description: "Get category details including top-rated products."
+              inputParameters:
+                - name: categorySlug
+                  in: path
+                  type: string
+                  required: true
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+
+  exposes:
+    - type: rest
+      port: 8100
+      namespace: trustradius-products-api
+      resources:
+        - path: /v1/products
+          name: products
+          description: "List products"
+          operations:
+            - method: GET
+              name: list-products
+              description: "List B2B software products"
+              call: "trustradius-products.list-products"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+        - path: /v1/products/{productSlug}
+          name: product
+          description: "Get product details"
+          operations:
+            - method: GET
+              name: get-product
+              description: "Get product profile"
+              call: "trustradius-products.get-product"
+              with:
+                productSlug: "rest.productSlug"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+        - path: /v1/categories
+          name: categories
+          description: "List software categories"
+          operations:
+            - method: GET
+              name: list-categories
+              description: "List categories"
+              call: "trustradius-products.list-categories"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+
+    - type: mcp
+      port: 9100
+      namespace: trustradius-products-mcp
+      transport: http
+      tools:
+        - name: list-products
+          description: "List B2B software products on TrustRadius with TrustRadius scores and review counts."
+          hints:
+            readOnly: true
+            openWorld: true
+          call: "trustradius-products.list-products"
+          with:
+            category: "tools.category"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: get-product
+          description: "Get detailed product profile including TrustRadius score, review count, and rating breakdown."
+          hints:
+            readOnly: true
+            openWorld: false
+          call: "trustradius-products.get-product"
+          with:
+            productSlug: "tools.productSlug"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: get-product-ratings
+          description: "Get aggregate rating breakdown for a product across usability, support, value, and other dimensions."
+          hints:
+            readOnly: true
+            openWorld: false
+          call: "trustradius-products.get-product-ratings"
+          with:
+            productSlug: "tools.productSlug"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: list-categories
+          description: "List all software categories available on TrustRadius."
+          hints:
+            readOnly: true
+            openWorld: true
+          call: "trustradius-products.list-categories"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: get-category
+          description: "Get category details with top-rated products in that category."
+          hints:
+            readOnly: true
+            openWorld: false
+          call: "trustradius-products.get-category"
+          with:
+            categorySlug: "tools.categorySlug"
+          outputParameters:
+            - type: object
+              mapping: "$."

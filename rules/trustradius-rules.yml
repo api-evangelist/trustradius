@@ -1,0 +1,92 @@
+extends: spectral:oas
+rules:
+  trustradius-operation-ids-camel-case:
+    description: TrustRadius operation IDs must use camelCase format.
+    severity: warn
+    given: "$.paths.*[get,post,put,patch,delete]"
+    then:
+      field: operationId
+      function: pattern
+      functionOptions:
+        match: "^[a-z][a-zA-Z0-9]*$"
+
+  trustradius-versioned-paths:
+    description: All TrustRadius API paths must include version (e.g., /v1/).
+    severity: error
+    given: "$.paths"
+    then:
+      field: "@key"
+      function: pattern
+      functionOptions:
+        match: "^/v[0-9]/"
+
+  trustradius-api-key-security:
+    description: All TrustRadius API operations must require API key authentication.
+    severity: error
+    given: "$.paths.*[get,post,put,patch,delete]"
+    then:
+      field: security
+      function: truthy
+
+  trustradius-operations-tagged:
+    description: All TrustRadius operations must have tags.
+    severity: warn
+    given: "$.paths.*[get,post,put,patch,delete]"
+    then:
+      field: tags
+      function: truthy
+
+  trustradius-slug-path-params:
+    description: TrustRadius path parameters for products, categories, and companies use slug format.
+    severity: warn
+    given: "$.paths"
+    then:
+      field: "@key"
+      function: pattern
+      functionOptions:
+        match: "^/v[0-9]/[a-z-]+(/(\\{[a-z]+Slug\\}|[a-z-]+))*(/[a-z-]+)?"
+
+  trustradius-trscore-range:
+    description: TrustRadius trScore fields must define minimum 1 and maximum 10 range.
+    severity: warn
+    given: "$.components.schemas.*.properties.trScore"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          properties:
+            minimum:
+              const: 1
+            maximum:
+              const: 10
+
+  trustradius-response-200-json:
+    description: TrustRadius GET operations must include a 200 response with JSON content.
+    severity: warn
+    given: "$.paths.*[get].responses.200"
+    then:
+      field: content.application/json
+      function: truthy
+
+  trustradius-pagination-params:
+    description: TrustRadius collection endpoints should support page and perPage parameters.
+    severity: info
+    given: "$.paths.*[get]"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          properties:
+            parameters:
+              type: array
+
+  trustradius-date-time-format:
+    description: Date/time fields in TrustRadius schemas must use date-time format.
+    severity: warn
+    given: "$.components.schemas.*.properties[createdAt,updatedAt]"
+    then:
+      field: format
+      function: enumeration
+      functionOptions:
+        values:
+          - date-time

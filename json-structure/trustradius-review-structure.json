@@ -1,0 +1,24 @@
+{
+  "name": "TrustRadius Review",
+  "description": "Structure documentation for TrustRadius verified software review objects.",
+  "fields": [
+    {"name": "id", "type": "string", "required": true, "description": "Unique review identifier."},
+    {"name": "title", "type": "string", "required": false, "description": "Review title."},
+    {"name": "body", "type": "string", "required": false, "description": "Full review text (400+ words average)."},
+    {"name": "trScore", "type": "integer", "required": true, "min": 1, "max": 10, "description": "TrustRadius score 1-10."},
+    {"name": "pros", "type": "array<string>", "required": false, "description": "Product strengths listed by reviewer."},
+    {"name": "cons", "type": "array<string>", "required": false, "description": "Product weaknesses listed by reviewer."},
+    {"name": "createdAt", "type": "date-time", "required": true, "description": "Review submission timestamp."},
+    {"name": "verified", "type": "boolean", "required": true, "description": "Whether review is verified."},
+    {"name": "product.id", "type": "string", "required": true, "description": "Product identifier."},
+    {"name": "product.slug", "type": "string", "required": true, "description": "Product slug."},
+    {"name": "product.name", "type": "string", "required": true, "description": "Product name."},
+    {"name": "reviewer.title", "type": "string", "required": false, "description": "Reviewer job title."},
+    {"name": "reviewer.industry", "type": "string", "required": false, "description": "Reviewer industry."},
+    {"name": "reviewer.companySize", "type": "string", "required": false, "enum": ["small", "medium", "large", "enterprise"]},
+    {"name": "ratings.overall", "type": "number", "required": false, "description": "Overall rating."},
+    {"name": "ratings.usability", "type": "number", "required": false, "description": "Usability rating."},
+    {"name": "ratings.support", "type": "number", "required": false, "description": "Support rating."},
+    {"name": "ratings.likelihoodToRecommend", "type": "number", "required": false, "description": "Likelihood to recommend."}
+  ]
+}

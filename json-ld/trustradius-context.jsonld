@@ -1,0 +1,44 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "schema": "https://schema.org/",
+    "tr": "https://www.trustradius.com/vocabulary/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "Product": "schema:SoftwareApplication",
+    "id": "schema:identifier",
+    "slug": {"@id": "tr:slug", "@type": "xsd:string"},
+    "name": "schema:name",
+    "description": "schema:description",
+    "vendorName": "schema:provider",
+    "websiteUrl": "schema:url",
+    "trScore": {"@id": "tr:trScore", "@type": "xsd:decimal"},
+    "reviewCount": {"@id": "schema:reviewCount", "@type": "xsd:integer"},
+    "categories": {"@id": "schema:applicationCategory", "@type": "schema:Thing"},
+
+    "Review": "schema:Review",
+    "title": "schema:name",
+    "body": {"@id": "schema:reviewBody", "@type": "xsd:string"},
+    "pros": {"@id": "tr:pros", "@container": "@list"},
+    "cons": {"@id": "tr:cons", "@container": "@list"},
+    "createdAt": {"@id": "schema:dateCreated", "@type": "xsd:dateTime"},
+    "updatedAt": {"@id": "schema:dateModified", "@type": "xsd:dateTime"},
+    "verified": {"@id": "tr:verified", "@type": "xsd:boolean"},
+
+    "ratings": {"@id": "schema:reviewRating", "@type": "schema:Rating"},
+    "overall": {"@id": "schema:ratingValue", "@type": "xsd:decimal"},
+    "usability": {"@id": "tr:usabilityRating", "@type": "xsd:decimal"},
+    "support": {"@id": "tr:supportRating", "@type": "xsd:decimal"},
+    "likelihoodToRecommend": {"@id": "tr:likelihoodToRecommend", "@type": "xsd:decimal"},
+    "valueForMoney": {"@id": "tr:valueForMoney", "@type": "xsd:decimal"},
+    "featureRichness": {"@id": "tr:featureRichness", "@type": "xsd:decimal"},
+
+    "reviewer": {"@id": "schema:author", "@type": "schema:Person"},
+    "title_reviewer": {"@id": "schema:jobTitle"},
+    "industry": {"@id": "schema:industry", "@type": "xsd:string"},
+    "companySize": {"@id": "tr:companySize", "@type": "xsd:string"},
+
+    "Category": "schema:CategoryCode",
+    "productCount": {"@id": "tr:productCount", "@type": "xsd:integer"}
+  }
+}

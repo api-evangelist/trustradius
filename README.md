@@ -1,43 +1,125 @@
 # TrustRadius
 
-TrustRadius (https://www.trustradius.com/) is a B2B technology review platform that provides verified, in-depth reviews of business software and technology products. Founded in Austin, Texas, and backed by Mayfield Fund, LiveOak Venture Partners, and Next Coast Ventures, TrustRadius serves both technology buyers and vendors by delivering authenticated, high-quality peer reviews free from pay-to-play advertising.
+TrustRadius is a B2B buyer intelligence and software review platform that helps technology buyers make confident purchasing decisions and enables vendors to turn verified customer reviews into demand generation. Founded in 2012 in Austin, Texas, TrustRadius hosts in-depth verified reviews averaging 400+ words across thousands of B2B software products.
 
-## Overview
+The platform provides downstream intent data showing which accounts are actively researching products, and integrates with Salesforce, HubSpot, 6sense, Demandbase, LinkedIn, Marketo, and Snowflake.
 
-TrustRadius covers thousands of B2B software products across hundreds of categories. Reviews on the platform are long-form, vetted for authenticity, and tied to verified user identities, making them a trusted resource for enterprise technology decision-making. The platform serves millions of buyers annually and provides vendors with tools to collect, showcase, and distribute customer voice content.
+**API Documentation:** [apidocs.trustradius.com](https://apidocs.trustradius.com/)
+**Vendor Portal:** [solutions.trustradius.com](https://solutions.trustradius.com/)
 
-Vendors can claim and manage product profiles through the TrustRadius Vendor Portal, where they can track review metrics, access analytics, and integrate review content into their own marketing and sales workflows via the TrustRadius API.
+---
 
 ## APIs
 
-TrustRadius offers a REST API available to customers through the Vendor Portal. The API provides access to review data, product ratings, and related content. Authentication is handled via an API key obtained through the Vendor Portal's Integrations Hub.
+### TrustRadius Public API
+Programmatic access to product profiles, TrustRadius scores, categories, and aggregate ratings.
+- [Documentation](https://apidocs.trustradius.com/)
+- [OpenAPI Spec](openapi/trustradius-public-openapi.yml)
 
-Key capabilities of the TrustRadius API include:
+### TrustRadius Reviews API
+Verified B2B software reviews with detailed content, multi-dimensional ratings, and reviewer information.
+- [Documentation](https://apidocs.trustradius.com/)
+- [OpenAPI Spec](openapi/trustradius-reviews-openapi.yml)
 
-- Retrieving product reviews and ratings
-- Accessing vendor and product profile data
-- Syncing review content for use in marketing and sales tools
-- Integrating with third-party platforms such as CRM and advocacy tools
+### TrustRadius Downstream Intent Data API
+Buyer intent signals identifying accounts researching your products, competitors, and categories.
+- [Documentation](https://solutions.trustradius.com/intent-data/)
 
-API documentation is hosted on Stoplight at https://apidocs.trustradius.com/ and https://documentation.trustradius.com/api-reference/apis.
+### TrustRadius Content Syndication API (TrustQuotes)
+Licensed review excerpts and quotes for marketing channels and sales collateral.
+- [Documentation](https://solutions.trustradius.com/products/)
 
-## Common Properties
+---
 
-| Property | URL |
+## Artifacts
+
+### OpenAPI Specifications
+| Spec | Description |
 |---|---|
-| Website | https://www.trustradius.com/ |
-| About | https://about.trustradius.com/ |
-| Vendor Portal | https://solutions.trustradius.com/ |
-| API Documentation | https://apidocs.trustradius.com/ |
-| API Key Access | https://trustradius.freshdesk.com/support/solutions/articles/43000639047 |
-| Terms of Use | https://www.trustradius.com/static/terms-of-use |
-| Privacy Policy | https://www.trustradius.com/static/privacy-policy |
-| Blog | https://solutions.trustradius.com/buyer-blog/ |
-| X (Twitter) | https://x.com/trustradius |
-| LinkedIn | https://www.linkedin.com/company/trustradius |
+| [trustradius-public-openapi.yml](openapi/trustradius-public-openapi.yml) | Products, categories, and ratings API |
+| [trustradius-reviews-openapi.yml](openapi/trustradius-reviews-openapi.yml) | Verified reviews API |
 
-## Tags
+### Spectral Rules
+| File | Description |
+|---|---|
+| [trustradius-rules.yml](rules/trustradius-rules.yml) | Spectral ruleset for TrustRadius API conventions |
 
-- Software Reviews
-- B2B
-- Technology Reviews
+### Naftiko Capabilities
+
+#### Shared Definitions
+| File | API |
+|---|---|
+| [shared/products.yaml](capabilities/shared/products.yaml) | Products and Categories API |
+| [shared/reviews.yaml](capabilities/shared/reviews.yaml) | Reviews API |
+
+#### Workflow Capabilities
+| File | Description | APIs |
+|---|---|---|
+| [buyer-intelligence.yaml](capabilities/buyer-intelligence.yaml) | B2B software research and competitive analysis | Products + Reviews |
+
+### JSON Schema
+| File | Description |
+|---|---|
+| [trustradius-review-schema.json](json-schema/trustradius-review-schema.json) | TrustRadius review object schema |
+| [trustradius-product-schema.json](json-schema/trustradius-product-schema.json) | Software product profile schema |
+
+### JSON Structure
+| File | Description |
+|---|---|
+| [trustradius-review-structure.json](json-structure/trustradius-review-structure.json) | Review field structure documentation |
+
+### JSON-LD Context
+| File | Description |
+|---|---|
+| [trustradius-context.jsonld](json-ld/trustradius-context.jsonld) | JSON-LD context mapping TrustRadius vocabulary to schema.org |
+
+### Examples
+| File | Description |
+|---|---|
+| [trustradius-list-products-example.json](examples/trustradius-list-products-example.json) | List products by category |
+| [trustradius-get-product-reviews-example.json](examples/trustradius-get-product-reviews-example.json) | Get product reviews with filters |
+
+### Vocabulary
+| File | Description |
+|---|---|
+| [trustradius-vocabulary.yml](vocabulary/trustradius-vocabulary.yml) | Domain vocabulary for TrustRadius buyer intelligence platform |
+
+---
+
+## Authentication
+
+TrustRadius APIs use API key authentication:
+- Obtain your API key from TrustRadius Vendor Portal > Integrations > Get API Key
+- Pass the key as the `X-API-Key` HTTP header
+
+[API Key Access Guide](https://trustradius.freshdesk.com/support/solutions/articles/43000639047)
+
+---
+
+## Integrations
+
+TrustRadius integrates with:
+- **CRM**: Salesforce, HubSpot
+- **ABM**: 6sense, Demandbase, LinkedIn Matched Audiences
+- **Marketing Automation**: Marketo
+- **Data Warehouse**: Snowflake
+
+[View All Integrations](https://solutions.trustradius.com/integrations/)
+
+---
+
+## Links
+
+- [Website](https://www.trustradius.com/)
+- [Vendor Portal](https://solutions.trustradius.com/)
+- [API Documentation](https://apidocs.trustradius.com/)
+- [Terms of Use](https://www.trustradius.com/legal/terms-of-use)
+- [Privacy Policy](https://www.trustradius.com/legal/privacy-policy)
+- [GitHub](https://github.com/trustradius)
+- [LinkedIn](https://www.linkedin.com/company/trustradius)
+- [X (Twitter)](https://twitter.com/TrustRadius)
+
+## Maintainers
+
+**FN:** Kin Lane
+**Email:** kin@apievangelist.com

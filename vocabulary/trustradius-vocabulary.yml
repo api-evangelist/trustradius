@@ -1,0 +1,114 @@
+vocabulary:
+  name: TrustRadius Vocabulary
+  description: >-
+    Domain vocabulary and terminology for TrustRadius APIs and the B2B buyer
+    intelligence platform, covering reviews, scores, categories, intent data, and
+    buyer research concepts.
+  version: "1.0.0"
+  created: "2026-05-03"
+  modified: "2026-05-03"
+
+terms:
+  - term: TrustRadius Score (trScore)
+    definition: >-
+      A weighted score from 1 to 10 calculated by TrustRadius for each software product,
+      based on the quantity and recency of verified reviews. More recent reviews are
+      weighted more heavily. Used as the primary quality signal for B2B software products.
+    tags:
+      - Ratings
+      - B2B Software Reviews
+
+  - term: Verified Review
+    definition: >-
+      A software review that TrustRadius has confirmed came from an actual user of the
+      product, typically through LinkedIn authentication or employer verification.
+      Verified reviews are marked with a verification badge.
+    tags:
+      - Reviews
+      - Trust
+
+  - term: Product Slug
+    definition: >-
+      A URL-safe identifier for a software product on TrustRadius, derived from the
+      product name (e.g., "salesforce-crm", "hubspot-crm"). Used as the primary
+      identifier in TrustRadius API endpoints.
+    tags:
+      - Products
+
+  - term: Category Slug
+    definition: >-
+      A URL-safe identifier for a software category on TrustRadius (e.g., "crm",
+      "marketing-automation", "project-management"). Used to filter products and reviews
+      by software type.
+    tags:
+      - Categories
+
+  - term: Downstream Intent Data
+    definition: >-
+      Second-party intent signals generated from buyer behavior on the TrustRadius
+      platform, including which accounts are viewing product profiles, comparing
+      competitors, and reading reviews. Distinct from third-party intent data because
+      the signal originates directly from TrustRadius user activity.
+    tags:
+      - Intent Data
+      - Buyer Intelligence
+
+  - term: Likelihood to Recommend
+    definition: >-
+      A rating dimension in TrustRadius reviews asking reviewers how likely they are
+      to recommend the product to others, scored on a 1-10 scale. One of the most
+      commonly cited dimensions in B2B buying decisions.
+    tags:
+      - Reviews
+      - Ratings
+
+  - term: Content Licensing
+    definition: >-
+      TrustRadius's TrustQuotes program that allows vendors to license and syndicate
+      verified review content — quotes, ratings, and badges — for use in digital
+      advertising, landing pages, and sales materials.
+    tags:
+      - Content Licensing
+      - Marketing
+
+  - term: Buyer Intelligence Platform
+    definition: >-
+      TrustRadius's core platform that aggregates verified in-depth reviews and intent
+      signals to help B2B technology buyers make purchasing decisions and help vendors
+      understand who is researching their products.
+    tags:
+      - Buyer Intelligence
+      - Platform
+
+  - term: Company Size
+    definition: >-
+      A reviewer attribute in TrustRadius indicating the size of the reviewer's company:
+      small (1-50 employees), medium (51-500), large (501-5000), or enterprise (5000+).
+      Used to filter reviews for peer-relevant comparisons.
+    tags:
+      - Reviews
+
+  - term: Pros and Cons
+    definition: >-
+      Structured review sections in TrustRadius reviews where reviewers list the top
+      advantages (pros) and disadvantages (cons) of the product. These structured
+      fields support comparison and summarization use cases.
+    tags:
+      - Reviews
+
+  - term: API Key
+    definition: >-
+      Authentication credential for the TrustRadius REST API, obtained from the
+      TrustRadius Vendor Portal under Integrations > Get API Key. Passed as the
+      X-API-Key HTTP header in all API requests.
+    tags:
+      - Authentication
+
+  - term: Intent-Driven Leads
+    definition: >-
+      A TrustRadius product that delivers ICP-qualified prospects who are actively
+      researching the vendor's category on TrustRadius, delivered as opted-in leads
+      with verified business email addresses.
+    tags:
+      - Intent Data
+      - Lead Generation
