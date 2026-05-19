@@ -1,0 +1,245 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: TrustRadius Public API — Products
+  description: 'TrustRadius Public API — Products. 4 operations. Lead operation: List Products. Self-contained Naftiko capability
+    covering one Trustradius business surface.'
+  tags:
+  - Trustradius
+  - Products
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    TRUSTRADIUS_API_KEY: TRUSTRADIUS_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: public-products
+    baseUri: https://api.trustradius.com/v1
+    description: TrustRadius Public API — Products business capability. Self-contained, no shared references.
+    resources:
+    - name: products
+      path: /products
+      operations:
+      - name: listproducts
+        method: GET
+        description: List Products
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: category
+          in: query
+          type: string
+          description: Filter products by category slug
+        - name: page
+          in: query
+          type: integer
+          description: Page number for pagination
+        - name: perPage
+          in: query
+          type: integer
+          description: Number of products per page
+    - name: products-productSlug
+      path: /products/{productSlug}
+      operations:
+      - name: getproduct
+        method: GET
+        description: Get Product
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: productSlug
+          in: path
+          type: string
+          description: Product URL slug identifier
+          required: true
+    - name: products-productSlug-ratings
+      path: /products/{productSlug}/ratings
+      operations:
+      - name: getproductratings
+        method: GET
+        description: Get Product Ratings
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: productSlug
+          in: path
+          type: string
+          required: true
+    - name: products-productSlug-reviews
+      path: /products/{productSlug}/reviews
+      operations:
+      - name: getproductreviews
+        method: GET
+        description: Get Product Reviews
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: productSlug
+          in: path
+          type: string
+          required: true
+        - name: page
+          in: query
+          type: integer
+        - name: perPage
+          in: query
+          type: integer
+        - name: minScore
+          in: query
+          type: integer
+          description: Minimum TrustRadius score filter
+        - name: industry
+          in: query
+          type: string
+          description: Filter by reviewer's industry
+        - name: companySize
+          in: query
+          type: string
+          description: Filter by reviewer's company size
+    authentication:
+      type: apikey
+      key: X-API-Key
+      value: '{{env.TRUSTRADIUS_API_KEY}}'
+      placement: header
+  exposes:
+  - type: rest
+    namespace: public-products-rest
+    port: 8080
+    description: REST adapter for TrustRadius Public API — Products. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/products
+      name: products
+      description: REST surface for products.
+      operations:
+      - method: GET
+        name: listproducts
+        description: List Products
+        call: public-products.listproducts
+        with:
+          category: rest.category
+          page: rest.page
+          perPage: rest.perPage
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/products/{productslug}
+      name: products-productslug
+      description: REST surface for products-productSlug.
+      operations:
+      - method: GET
+        name: getproduct
+        description: Get Product
+        call: public-products.getproduct
+        with:
+          productSlug: rest.productSlug
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/products/{productslug}/ratings
+      name: products-productslug-ratings
+      description: REST surface for products-productSlug-ratings.
+      operations:
+      - method: GET
+        name: getproductratings
+        description: Get Product Ratings
+        call: public-products.getproductratings
+        with:
+          productSlug: rest.productSlug
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/products/{productslug}/reviews
+      name: products-productslug-reviews
+      description: REST surface for products-productSlug-reviews.
+      operations:
+      - method: GET
+        name: getproductreviews
+        description: Get Product Reviews
+        call: public-products.getproductreviews
+        with:
+          productSlug: rest.productSlug
+          page: rest.page
+          perPage: rest.perPage
+          minScore: rest.minScore
+          industry: rest.industry
+          companySize: rest.companySize
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: public-products-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for TrustRadius Public API — Products. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: list-products
+      description: List Products
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: public-products.listproducts
+      with:
+        category: tools.category
+        page: tools.page
+        perPage: tools.perPage
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-product
+      description: Get Product
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: public-products.getproduct
+      with:
+        productSlug: tools.productSlug
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-product-ratings
+      description: Get Product Ratings
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: public-products.getproductratings
+      with:
+        productSlug: tools.productSlug
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-product-reviews
+      description: Get Product Reviews
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: public-products.getproductreviews
+      with:
+        productSlug: tools.productSlug
+        page: tools.page
+        perPage: tools.perPage
+        minScore: tools.minScore
+        industry: tools.industry
+        companySize: tools.companySize
+      outputParameters:
+      - type: object
+        mapping: $.

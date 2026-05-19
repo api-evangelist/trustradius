@@ -1,0 +1,126 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: TrustRadius Public API — Categories
+  description: 'TrustRadius Public API — Categories. 2 operations. Lead operation: List Categories. Self-contained Naftiko
+    capability covering one Trustradius business surface.'
+  tags:
+  - Trustradius
+  - Categories
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    TRUSTRADIUS_API_KEY: TRUSTRADIUS_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: public-categories
+    baseUri: https://api.trustradius.com/v1
+    description: TrustRadius Public API — Categories business capability. Self-contained, no shared references.
+    resources:
+    - name: categories
+      path: /categories
+      operations:
+      - name: listcategories
+        method: GET
+        description: List Categories
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: page
+          in: query
+          type: integer
+        - name: perPage
+          in: query
+          type: integer
+    - name: categories-categorySlug
+      path: /categories/{categorySlug}
+      operations:
+      - name: getcategory
+        method: GET
+        description: Get Category
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: categorySlug
+          in: path
+          type: string
+          required: true
+    authentication:
+      type: apikey
+      key: X-API-Key
+      value: '{{env.TRUSTRADIUS_API_KEY}}'
+      placement: header
+  exposes:
+  - type: rest
+    namespace: public-categories-rest
+    port: 8080
+    description: REST adapter for TrustRadius Public API — Categories. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/categories
+      name: categories
+      description: REST surface for categories.
+      operations:
+      - method: GET
+        name: listcategories
+        description: List Categories
+        call: public-categories.listcategories
+        with:
+          page: rest.page
+          perPage: rest.perPage
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/categories/{categoryslug}
+      name: categories-categoryslug
+      description: REST surface for categories-categorySlug.
+      operations:
+      - method: GET
+        name: getcategory
+        description: Get Category
+        call: public-categories.getcategory
+        with:
+          categorySlug: rest.categorySlug
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: public-categories-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for TrustRadius Public API — Categories. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: list-categories
+      description: List Categories
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: public-categories.listcategories
+      with:
+        page: tools.page
+        perPage: tools.perPage
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-category
+      description: Get Category
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: public-categories.getcategory
+      with:
+        categorySlug: tools.categorySlug
+      outputParameters:
+      - type: object
+        mapping: $.

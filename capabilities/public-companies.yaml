@@ -1,0 +1,81 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: TrustRadius Public API — Companies
+  description: 'TrustRadius Public API — Companies. 1 operations. Lead operation: Get Company. Self-contained Naftiko capability
+    covering one Trustradius business surface.'
+  tags:
+  - Trustradius
+  - Companies
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    TRUSTRADIUS_API_KEY: TRUSTRADIUS_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: public-companies
+    baseUri: https://api.trustradius.com/v1
+    description: TrustRadius Public API — Companies business capability. Self-contained, no shared references.
+    resources:
+    - name: companies-companySlug
+      path: /companies/{companySlug}
+      operations:
+      - name: getcompany
+        method: GET
+        description: Get Company
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: companySlug
+          in: path
+          type: string
+          required: true
+    authentication:
+      type: apikey
+      key: X-API-Key
+      value: '{{env.TRUSTRADIUS_API_KEY}}'
+      placement: header
+  exposes:
+  - type: rest
+    namespace: public-companies-rest
+    port: 8080
+    description: REST adapter for TrustRadius Public API — Companies. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/companies/{companyslug}
+      name: companies-companyslug
+      description: REST surface for companies-companySlug.
+      operations:
+      - method: GET
+        name: getcompany
+        description: Get Company
+        call: public-companies.getcompany
+        with:
+          companySlug: rest.companySlug
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: public-companies-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for TrustRadius Public API — Companies. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: get-company
+      description: Get Company
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: public-companies.getcompany
+      with:
+        companySlug: tools.companySlug
+      outputParameters:
+      - type: object
+        mapping: $.
