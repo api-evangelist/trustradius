@@ -10,7 +10,7 @@ description: >-
   with integrations into Salesforce, HubSpot, 6sense, Demandbase, LinkedIn, Marketo, and Snowflake. Authentication uses
   API key access from the TrustRadius Vendor Portal.
 type: Index
-image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 tags:
   - B2B Software Reviews
   - Buyer Intelligence
@@ -31,7 +31,7 @@ apis:
       - Product Reviews
       - Reviews
       - Software Categories
-    image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
     baseURL: https://api.trustradius.com/v1
     humanURL: https://apidocs.trustradius.com/
     properties:
@@ -57,7 +57,7 @@ apis:
       - Buyer Intelligence
       - B2B
       - ABM
-    image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
     baseURL: https://api.trustradius.com/v1
     humanURL: https://solutions.trustradius.com/intent-data/
     properties:
@@ -78,7 +78,7 @@ apis:
       - Reviews
       - B2B Software Reviews
       - Product Reviews
-    image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
     baseURL: https://api.trustradius.com/v1
     humanURL: https://apidocs.trustradius.com/
     properties:
@@ -101,7 +101,7 @@ apis:
       - Reviews
       - Marketing
       - B2B
-    image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
     baseURL: https://api.trustradius.com/v1
     humanURL: https://solutions.trustradius.com/products/
     properties:
