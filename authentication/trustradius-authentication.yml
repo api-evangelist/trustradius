@@ -1,0 +1,17 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/trustradius-public-openapi.yml, openapi/trustradius-reviews-openapi.yml
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - header
+schemes:
+- name: ApiKey
+  type: apiKey
+  in: header
+  parameter: X-API-Key
+  description: TrustRadius API key obtained from Vendor Portal > Integrations
+  sources:
+  - openapi/trustradius-public-openapi.yml
+  - openapi/trustradius-reviews-openapi.yml

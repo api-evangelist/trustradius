@@ -115,6 +115,10 @@ apis:
       digital advertising, landing pages, email campaigns, and sales collateral. Supports the Integrated Content
       Syndication Network for broad review distribution.
 common:
+  - type: DomainSecurity
+    url: security/trustradius-domain-security.yml
+  - type: Authentication
+    url: authentication/trustradius-authentication.yml
   - url: https://www.trustradius.com/
     name: TrustRadius Website
     type: Website
@@ -151,6 +155,8 @@ common:
   - url: https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/rules/trustradius-rules.yml
     name: Spectral Rules
     type: SpectralRules
+  - url: https://solutions.trustradius.com/feed/
+    type: Blog
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
