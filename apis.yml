@@ -115,6 +115,8 @@ apis:
       digital advertising, landing pages, email campaigns, and sales collateral. Supports the Integrated Content
       Syndication Network for broad review distribution.
 common:
+  - type: AgenticAccess
+    url: agentic-access/trustradius-agentic-access.yml
   - type: DomainSecurity
     url: security/trustradius-domain-security.yml
   - type: Authentication
