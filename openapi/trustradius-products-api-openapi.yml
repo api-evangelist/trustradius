@@ -1,0 +1,317 @@
+openapi: 3.0.3
+info:
+  title: TrustRadius Public Categories Products API
+  description: Provides programmatic access to product data, verified user reviews, TrustRadius scores, software categories, and aggregate rating information for B2B software products. Authentication requires an API key from the TrustRadius Vendor Portal.
+  version: 1.0.0
+  contact:
+    url: https://apidocs.trustradius.com/
+  termsOfService: https://www.trustradius.com/legal/terms-of-use
+servers:
+- url: https://api.trustradius.com/v1
+  description: Production
+tags:
+- name: Products
+  description: Software product operations
+paths:
+  /products:
+    get:
+      operationId: listProducts
+      summary: List Products
+      description: Retrieve a list of software products indexed on TrustRadius with their ratings and review counts.
+      tags:
+      - Products
+      security:
+      - ApiKey: []
+      parameters:
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter products by category slug
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+        description: Page number for pagination
+      - name: perPage
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 20
+          maximum: 100
+        description: Number of products per page
+      responses:
+        '200':
+          description: Products list returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+        '401':
+          description: Unauthorized - invalid or missing API key
+  /products/{productSlug}:
+    get:
+      operationId: getProduct
+      summary: Get Product
+      description: Retrieve detailed product profile including TrustRadius score, review counts, and rating breakdown.
+      tags:
+      - Products
+      security:
+      - ApiKey: []
+      parameters:
+      - name: productSlug
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Product URL slug identifier
+      responses:
+        '200':
+          description: Product details returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+  /products/{productSlug}/reviews:
+    get:
+      operationId: getProductReviews
+      summary: Get Product Reviews
+      description: Retrieve verified user reviews for a specific product with filtering options.
+      tags:
+      - Products
+      security:
+      - ApiKey: []
+      parameters:
+      - name: productSlug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+      - name: perPage
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 20
+          maximum: 50
+      - name: minScore
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 10
+        description: Minimum TrustRadius score filter
+      - name: industry
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by reviewer's industry
+      - name: companySize
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - small
+          - medium
+          - large
+          - enterprise
+        description: Filter by reviewer's company size
+      responses:
+        '200':
+          description: Reviews returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewListResponse'
+  /products/{productSlug}/ratings:
+    get:
+      operationId: getProductRatings
+      summary: Get Product Ratings
+      description: Retrieve aggregate rating breakdown for a product across all rated dimensions.
+      tags:
+      - Products
+      security:
+      - ApiKey: []
+      parameters:
+      - name: productSlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Aggregate ratings returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductRatings'
+components:
+  schemas:
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+          description: Full review text (400+ words average)
+        trScore:
+          type: integer
+          minimum: 1
+          maximum: 10
+          description: TrustRadius score given by reviewer
+        pros:
+          type: array
+          items:
+            type: string
+        cons:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        reviewer:
+          type: object
+          properties:
+            title:
+              type: string
+            industry:
+              type: string
+            companySize:
+              type: string
+              enum:
+              - small
+              - medium
+              - large
+              - enterprise
+            verified:
+              type: boolean
+        ratings:
+          $ref: '#/components/schemas/ProductRatings'
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        vendorName:
+          type: string
+        trScore:
+          type: number
+          format: double
+          description: Weighted TrustRadius score (0-10)
+        reviewCount:
+          type: integer
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategorySummary'
+        ratings:
+          $ref: '#/components/schemas/ProductRatings'
+        websiteUrl:
+          type: string
+          format: uri
+    ReviewListResponse:
+      type: object
+      properties:
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/Review'
+        total:
+          type: integer
+        page:
+          type: integer
+    ProductRatings:
+      type: object
+      properties:
+        overall:
+          type: number
+          format: double
+        usability:
+          type: number
+          format: double
+        support:
+          type: number
+          format: double
+        likelihoodToRecommend:
+          type: number
+          format: double
+        valueForMoney:
+          type: number
+          format: double
+        featureRichness:
+          type: number
+          format: double
+    CategorySummary:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        productCount:
+          type: integer
+    ProductListResponse:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductSummary'
+        total:
+          type: integer
+        page:
+          type: integer
+        perPage:
+          type: integer
+    ProductSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        trScore:
+          type: number
+          format: double
+          description: TrustRadius score (0-10)
+        reviewCount:
+          type: integer
+        categories:
+          type: array
+          items:
+            type: string
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: TrustRadius API key obtained from Vendor Portal > Integrations

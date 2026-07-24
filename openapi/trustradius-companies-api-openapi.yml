@@ -1,0 +1,82 @@
+openapi: 3.0.3
+info:
+  title: TrustRadius Public Categories Companies API
+  description: Provides programmatic access to product data, verified user reviews, TrustRadius scores, software categories, and aggregate rating information for B2B software products. Authentication requires an API key from the TrustRadius Vendor Portal.
+  version: 1.0.0
+  contact:
+    url: https://apidocs.trustradius.com/
+  termsOfService: https://www.trustradius.com/legal/terms-of-use
+servers:
+- url: https://api.trustradius.com/v1
+  description: Production
+tags:
+- name: Companies
+  description: Software company operations
+paths:
+  /companies/{companySlug}:
+    get:
+      operationId: getCompany
+      summary: Get Company
+      description: Retrieve company profile information from TrustRadius.
+      tags:
+      - Companies
+      security:
+      - ApiKey: []
+      parameters:
+      - name: companySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Company details returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+components:
+  schemas:
+    ProductSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        trScore:
+          type: number
+          format: double
+          description: TrustRadius score (0-10)
+        reviewCount:
+          type: integer
+        categories:
+          type: array
+          items:
+            type: string
+    Company:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        websiteUrl:
+          type: string
+          format: uri
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductSummary'
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: TrustRadius API key obtained from Vendor Portal > Integrations
