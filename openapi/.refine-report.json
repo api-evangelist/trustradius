@@ -1,0 +1,20 @@
+{
+  "provider": "trustradius",
+  "sources": [
+    "trustradius-categories-api-openapi.yml",
+    "trustradius-companies-api-openapi.yml",
+    "trustradius-products-api-openapi.yml",
+    "trustradius-reviews-api-openapi.yml"
+  ],
+  "outputs": [
+    "trustradius-categories-api-openapi.yml",
+    "trustradius-companies-api-openapi.yml",
+    "trustradius-products-api-openapi.yml",
+    "trustradius-reviews-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
