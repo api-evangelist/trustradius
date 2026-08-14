@@ -4,24 +4,28 @@ name: TrustRadius
 description: >-
   TrustRadius is a B2B buyer intelligence and software review platform that helps technology buyers make confident
   purchasing decisions and enables vendors to turn verified customer reviews into demand generation. Founded in 2012 and
-  headquartered in Austin, Texas, TrustRadius hosts in-depth verified reviews averaging 400+ words, and provides vendors
-  with downstream intent data showing who is actively researching their products, competitors, and categories. The
-  platform offers REST APIs for accessing product review data, buyer intent signals, and content licensing capabilities,
-  with integrations into Salesforce, HubSpot, 6sense, Demandbase, LinkedIn, Marketo, and Snowflake. Authentication uses
-  API key access from the TrustRadius Vendor Portal.
+  headquartered in Austin, Texas, and now part of HG Insights, TrustRadius hosts in-depth verified reviews averaging
+  400+ words, and provides vendors with downstream intent data showing which accounts are actively researching their
+  products, competitors, and categories. The TrustRadius Public API is a single read-only REST surface at
+  https://api.trustradius.com/v1 with eleven GET operations across five areas — product identity and scores, downstream
+  intent activity, profile traffic reporting, licensed TrustQuotes review excerpts, and a legacy visitor-insights
+  family. Authentication is one opaque API key in the lowercase x-api-key header, issued per vendor account from the
+  Vendor Portal; the published request budget is 10 requests per second. Intent data is designed to be activated in
+  Salesforce, HubSpot, 6sense, Demandbase, LinkedIn, Marketo, and Snowflake.
 type: Index
 accessModel:
-  pricing: enterprise
-  onboarding: self-serve
+  pricing: paid
+  onboarding: sales
   trial: false
-  try_now: false
+  try_now: true
   public: false
-  label: Enterprise · Self-serve signup
+  label: Paid vendor package · Sales-led · Public docs with a live mock
   confidence: high
   source:
   - plans
   - authentication
-  generated: '2026-07-22'
+  - sandbox
+  generated: '2026-08-14'
   method: derived
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/trustradius.png
 tags:
@@ -31,164 +35,311 @@ tags:
   - Software Reviews
   - Reviews
   - Product Reviews
-  - Categories
+  - Content Syndication
+  - Account Based Marketing
+  - Marketing
+  - Analytics
 access: 3rd-Party
 created: '2026-05-03'
-modified: '2026-05-19'
+modified: '2026-08-14'
 specificationVersion: '0.19'
 apis:
+- aid: trustradius:trustradius-product-data-api
+  name: TrustRadius Product Data API
+  description: >-
+    Product identity and scoring. GET /product-ids exchanges a TrustRadius product slug for the opaque product `_id`
+    and owning `vendor._id` that every other TrustRadius operation requires, and called with no parameters returns
+    every published product under the calling vendor's profile. GET /product-scores returns the TrustRadius (TR)
+    Score and star score — each as a {score, max} object — plus review, rating and combined counts. This is the
+    entry point for the whole API.
+  humanURL: https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api
+  baseURL: https://api.trustradius.com/v1
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  tags:
+  - Products
+  - Ratings
+  - B2B Software Reviews
+  properties:
+  - type: OpenAPI
+    url: openapi/trustradius-product-data-api-openapi.yml
+  - type: Overlay
+    url: overlays/trustradius-product-data-overlay.yaml
+  - type: APIReference
+    url: https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api
+  - type: Documentation
+    url: https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api
+  - type: Authentication
+    url: https://trustradius.freshdesk.com/support/solutions/articles/43000639047
 - aid: trustradius:trustradius-intent-data-api
   name: TrustRadius Downstream Intent Data API
+  description: >-
+    Downstream intent activity — which accounts are researching a vendor's products, competitor products, and software
+    categories on TrustRadius. GET /intent returns account records with an activity stream whose `type` is a closed
+    enum of click, download, like and view, filtered by ISO 8601 `start_time`/`stop_time`, account domains, and
+    activity names. Designed for activation in Salesforce, HubSpot, 6sense, Demandbase, Marketo, LinkedIn Matched
+    Audiences and Snowflake. Category intent data is a separately quoted add-on to the vendor package.
+  humanURL: https://solutions.trustradius.com/products/downstream-intent-data/
+  baseURL: https://api.trustradius.com/v1
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   tags:
   - Intent Data
   - Buyer Intelligence
   - B2B
   - ABM
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  baseURL: https://api.trustradius.com/v1
-  humanURL: https://solutions.trustradius.com/intent-data/
   properties:
-  - url: https://solutions.trustradius.com/intent-data/
-    type: Documentation
-  - url: https://solutions.trustradius.com/integrations/
-    type: Documentation
-  - url: https://apidocs.trustradius.com/
-    type: Documentation
+  - type: OpenAPI
+    url: openapi/trustradius-intent-data-api-openapi.yml
+  - type: Overlay
+    url: overlays/trustradius-intent-data-overlay.yaml
+  - type: AgentSkill
+    url: skills/trustradius-pull-downstream-intent.md
+  - type: APIReference
+    url: https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api
+  - type: Documentation
+    url: https://solutions.trustradius.com/products/downstream-intent-data/
+  - type: Documentation
+    url: https://solutions.trustradius.com/integrations/
+  - type: Authentication
+    url: https://trustradius.freshdesk.com/support/solutions/articles/43000639047
+- aid: trustradius:trustradius-trustquotes-api
+  name: TrustRadius TrustQuotes Content Syndication API
   description: >-
-    The TrustRadius Downstream Intent Data API delivers buyer and deal intelligence, revealing which accounts
-    are actively researching a vendor's products, competitor products, and software categories on TrustRadius.
-    The API provides account-level intent signals that can be integrated with Salesforce, HubSpot, 6sense,
-    Demandbase, Marketo, LinkedIn Matched Audiences, and Snowflake for account-based marketing and sales
-    acceleration workflows.
-- aid: trustradius:trustradius-content-syndication-api
-  name: TrustRadius Content Syndication API
+    Licensed review-quote syndication. GET /trustquotes returns review excerpts with the quote text, a link and rating
+    for the source review, reviewer identity and firmographics, an isAnonymous flag, and the tags applied to the
+    quote; GET /tags returns the tag vocabulary and its groups; GET /reports/syndication/tqw/pages reports how the
+    TrustQuotes for Web widget is performing by page. Requires a Content Licensing entitlement. The self-serve
+    TrustQuotes for Web JavaScript widget is the no-code alternative to this API.
+  humanURL: https://solutions.trustradius.com/products/content-licensing/
+  baseURL: https://api.trustradius.com/v1
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   tags:
   - Content Licensing
   - Reviews
   - Marketing
   - B2B
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  baseURL: https://api.trustradius.com/v1
-  humanURL: https://solutions.trustradius.com/products/
   properties:
-  - url: https://solutions.trustradius.com/products/
-    type: Documentation
-  - url: https://apidocs.trustradius.com/
-    type: Documentation
+  - type: OpenAPI
+    url: openapi/trustradius-trustquotes-api-openapi.yml
+  - type: Overlay
+    url: overlays/trustradius-trustquotes-overlay.yaml
+  - type: AgentSkill
+    url: skills/trustradius-syndicate-trustquotes.md
+  - type: APIReference
+    url: https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api
+  - type: Documentation
+    url: https://solutions.trustradius.com/products/content-licensing/
+  - type: Authentication
+    url: https://trustradius.freshdesk.com/support/solutions/articles/43000639047
+- aid: trustradius:trustradius-traffic-data-api
+  name: TrustRadius Traffic Data API
   description: >-
-    The TrustRadius Content Syndication API (TrustQuotes) enables vendors to extract and embed customer
-    review quotes across marketing channels. Businesses can retrieve licensed review excerpts, quotes,
-    and ratings for use in digital advertising, landing pages, email campaigns, and sales collateral.
-    Supports the Integrated Content Syndication Network for broad review distribution.
-- aid: trustradius:trustradius-categories-api
-  name: TrustRadius Categories API
-  description: Software category operations
-  humanURL: https://apidocs.trustradius.com/
+    Profile traffic reporting. GET /reports/traffic/products returns page views, visits and visitors per product per
+    day alongside the matching category-level totals, so share-of-category is computable client-side. GET
+    /reports/traffic/pages breaks the same window down by page type, page title and URL. Both accept ISO 8601
+    start-date/end-date filters, comma-separated product ids, skip/limit paging, and a format parameter for JSON or CSV.
+  humanURL: https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api
   baseURL: https://api.trustradius.com/v1
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   tags:
-  - Categories
+  - Analytics
+  - Traffic
+  - Reporting
   properties:
   - type: OpenAPI
-    url: openapi/trustradius-categories-api-openapi.yml
-  - type: Documentation
-    url: https://apidocs.trustradius.com/
+    url: openapi/trustradius-traffic-data-api-openapi.yml
+  - type: Overlay
+    url: overlays/trustradius-traffic-data-overlay.yaml
+  - type: AgentSkill
+    url: skills/trustradius-report-profile-traffic.md
+  - type: APIReference
+    url: https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api
   - type: Documentation
     url: https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api
   - type: Authentication
     url: https://trustradius.freshdesk.com/support/solutions/articles/43000639047
-- aid: trustradius:trustradius-companies-api
-  name: TrustRadius Companies API
-  description: Software company operations
-  humanURL: https://apidocs.trustradius.com/
+- aid: trustradius:trustradius-legacy-visitor-insights-api
+  name: TrustRadius Legacy Visitor Insights API
+  description: >-
+    Identified-company reporting, tagged `Legacy` by TrustRadius in its own specification. GET
+    /reports/visitor-insights/companies returns firmographics (name, SIC code, size, location, web and social handles)
+    with visit counts; GET /reports/visitor-insights/pages adds page-level detail; GET /accounts/{account_id} drills
+    into one company with its visitors and visits. Enabled per product — check isVisitorInsightsEnabled on the
+    /product-ids response first. None of the three is marked deprecated and no replacement or Sunset date is
+    published, so the Legacy label is a signal a machine cannot act on.
+  humanURL: https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api
   baseURL: https://api.trustradius.com/v1
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   tags:
-  - Companies
+  - Visitor Insights
+  - Firmographics
+  - Legacy
   properties:
   - type: OpenAPI
-    url: openapi/trustradius-companies-api-openapi.yml
-  - type: Documentation
-    url: https://apidocs.trustradius.com/
-  - type: Documentation
-    url: https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api
-  - type: Authentication
-    url: https://trustradius.freshdesk.com/support/solutions/articles/43000639047
-- aid: trustradius:trustradius-products-api
-  name: TrustRadius Products API
-  description: Software product operations
-  humanURL: https://apidocs.trustradius.com/
-  baseURL: https://api.trustradius.com/v1
-  tags:
-  - Products
-  properties:
-  - type: OpenAPI
-    url: openapi/trustradius-products-api-openapi.yml
-  - type: Documentation
-    url: https://apidocs.trustradius.com/
-  - type: Documentation
-    url: https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api
-  - type: Authentication
-    url: https://trustradius.freshdesk.com/support/solutions/articles/43000639047
-- aid: trustradius:trustradius-reviews-api
-  name: TrustRadius Reviews API
-  description: Product review retrieval operations
-  humanURL: https://apidocs.trustradius.com/
-  baseURL: https://api.trustradius.com/v1
-  tags:
-  - Reviews
-  properties:
-  - type: OpenAPI
-    url: openapi/trustradius-reviews-api-openapi.yml
-  - type: Documentation
-    url: https://apidocs.trustradius.com/
+    url: openapi/trustradius-legacy-api-openapi.yml
+  - type: Overlay
+    url: overlays/trustradius-legacy-overlay.yaml
+  - type: APIReference
+    url: https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api
   - type: Documentation
     url: https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api
   - type: Authentication
     url: https://trustradius.freshdesk.com/support/solutions/articles/43000639047
 common:
+  - type: OpenAPI
+    name: TrustRadius Public API (provider-published, complete)
+    url: openapi/_original/trustradius-api-openapi.yml
   - type: AgenticAccess
     url: agentic-access/trustradius-agentic-access.yml
   - type: DomainSecurity
     url: security/trustradius-domain-security.yml
   - type: Authentication
     url: authentication/trustradius-authentication.yml
+  - type: Conventions
+    url: conventions/trustradius-conventions.yml
+  - type: ErrorCatalog
+    url: errors/trustradius-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/trustradius-lifecycle.yml
+  - type: Conformance
+    url: conformance/trustradius-conformance.yml
+  - type: DataModel
+    url: data-model/trustradius-data-model.yml
+  - type: Sandbox
+    name: Live Prism mock provisioned by the TrustRadius developer portal
+    url: sandbox/trustradius-sandbox.yml
+  - type: Components
+    url: components/trustradius-components.yml
+  - type: Packages
+    url: packages/trustradius-packages.yml
+  - type: LLMsTxt
+    url: llms/trustradius-llms.txt
+  - type: AgentSkill
+    url: skills/_index.yml
+  - type: Vocabulary
+    url: vocabulary/trustradius-vocabulary.yml
+  - type: Examples
+    name: Request/response examples derived from the published OpenAPI (11, one per operation)
+    url: examples/trustradius-product-ids-get-example.json
+  - type: JSONSchema
+    name: JSON Schema extracted from the published OpenAPI components (17 schemas)
+    url: json-schema/trustradius-TrustQuotes.json
+  - type: JSONStructure
+    url: json-structure/trustradius-trustquote-structure.json
+  - type: JSONLD
+    url: json-ld/trustradius-context.jsonld
+  - type: PostmanCollection
+    name: TrustRadius Public API (generated by API Evangelist from the published OpenAPI)
+    url: collections/trustradius-public-api.postman_collection.json
+  - type: Plans
+    url: plans/trustradius-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/trustradius-rate-limits.yml
+  - type: FinOps
+    url: finops/trustradius-finops.yml
+  - url: https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/rules/trustradius-rules.yml
+    name: Spectral Rules
+    type: SpectralRules
   - url: https://www.trustradius.com/
     name: TrustRadius Website
     type: Website
-  - url: https://solutions.trustradius.com/
-    name: TrustRadius for Vendors
-    type: Portal
+  - url: https://apidocs.trustradius.com/
+    name: TrustRadius API Documentation
+    type: DeveloperPortal
   - url: https://apidocs.trustradius.com/
     name: API Documentation
     type: Documentation
+  - url: https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api
+    name: TrustRadius API Reference
+    type: APIReference
+  - url: https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api
+    name: TrustRadius API Overview — base URL, authentication and how to test
+    type: GettingStarted
+  - url: https://apidocs.trustradius.com/docs/public-api/ZG9jOjMzODE1NA-faq
+    name: 'API FAQ — identifiers, rate limit, multi-id syntax'
+    type: FAQ
   - url: https://trustradius.freshdesk.com/support/solutions/articles/43000639047
-    name: API Key Access
+    name: Accessing your TrustRadius API key
     type: Authentication
+  - url: https://trustradius.freshdesk.com/support/solutions
+    name: TrustRadius Help Center
+    type: Support
+  - url: https://solutions.trustradius.com/
+    name: TrustRadius for Vendors
+    type: Portal
+  - url: https://vendor.trustradius.com/
+    name: TrustRadius Vendor Portal
+    type: Login
+  - url: https://solutions.trustradius.com/claim-your-profile/
+    name: Claim Your Profile
+    type: SignUp
+  - url: https://solutions.trustradius.com/pricing/
+    name: Pricing & Packaging
+    type: Pricing
   - url: https://solutions.trustradius.com/integrations/
     name: Integrations
     type: Integrations
   - url: https://solutions.trustradius.com/products/
     name: Products
     type: Products
+  - url: https://about.trustradius.com/contact-us
+    name: Contact TrustRadius
+    type: Contact
   - url: https://www.trustradius.com/legal/terms-of-use
     name: Terms of Use
     type: TermsOfService
   - url: https://www.trustradius.com/legal/privacy-policy
     name: Privacy Policy
     type: PrivacyPolicy
+  - url: https://solutions.trustradius.com/feed/
+    name: TrustRadius Vendor Blog
+    type: Blog
+  - url: https://solutions.trustradius.com/resources-overview
+    name: TrustRadius Resources
+    type: Resources
+  - url: https://github.com/trustradius
+    name: TrustRadius on GitHub
+    type: GitHubOrganization
   - url: https://www.linkedin.com/company/trustradius
     name: TrustRadius on LinkedIn
     type: LinkedIn
   - url: https://twitter.com/TrustRadius
     name: TrustRadius on X (Twitter)
     type: X
-  - url: https://github.com/trustradius
-    name: TrustRadius on GitHub
-    type: GitHub
-  - url: https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/rules/trustradius-rules.yml
-    name: Spectral Rules
-    type: SpectralRules
-  - url: https://solutions.trustradius.com/feed/
-    type: Blog
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
+x-enrichment:
+  date: '2026-08-14'
+  status: enriched
+  artifacts_added: 59
+  artifacts_updated: 13
+  artifacts_quarantined: 6
+  pass: local-v1
+x-provenance:
+  openapi:
+    source: >-
+      https://stoplight.io/api/v1/projects/trustradius/public-api/nodes/reference/api.oas3.yml?fromExportButton=true&snapshotType=http_service
+    discovered_via: >-
+      The TrustRadius developer portal at https://apidocs.trustradius.com/ is Stoplight-hosted and renders
+      client-side. The real project id (cHJqOjc5NzU2 = prj:79756) and service node (YXBpOjUxMzgzNjA = api:5138360)
+      were recovered from the SPA's own XHR traffic via headless-Chrome net-log capture on 2026-08-14; the
+      projectId visible in the page HTML (18203562583) is an Optimizely account id and is a trap.
+    fetched: '2026-08-14'
+    http_status: 200
+    parses_as: OpenAPI 3.0.0, info.version 1.1, 11 operations, servers[0] https://api.trustradius.com/v1
+    ownership_check: >-
+      servers[] names api.trustradius.com; the document is served from the TrustRadius-owned Stoplight
+      workspace (trustradius/public-api) and is the spec rendered at apidocs.trustradius.com, a TrustRadius
+      subdomain. Ownership confirmed.
+  superseded:
+    what: >-
+      Six OpenAPI documents describing /products, /products/{productSlug}, /categories, /companies/{companySlug},
+      /reviews and /reviews/{reviewId}.
+    verdict: fabricated
+    detail: >-
+      Written by the 2026-05-04 API Evangelist scaffold sweep and split by refine-openapis on 2026-07-22. Not one
+      of their paths, operationIds or schemas appears in the provider-published contract, and their security scheme
+      used an uppercase X-API-Key header where TrustRadius documents lowercase x-api-key. Quarantined to
+      openapi/_scaffold/ with a README rather than deleted, so the defect stays auditable. Every artifact derived
+      from them — examples/, json-schema/, json-structure/, json-ld/, collections/, rules/, vocabulary/ and
+      agentic-access/ — was rebuilt from the real spec in the same pass.
