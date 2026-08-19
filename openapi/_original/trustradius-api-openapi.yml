@@ -1,0 +1,1677 @@
+openapi: 3.0.0
+info:
+  version: '1.1'
+  title: TrustRadius API
+  description: TrustRadius API
+paths:
+  /product-ids:
+    get:
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    vendor:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                        name:
+                          type: string
+                    slug:
+                      type: string
+                    isVisitorInsightsEnabled:
+                      type: string
+      description: 'Pass in a product''s slug (the unique string identifier based on the name, often found in www.trustradius.com URLs) to get a product ID for use in other API calls. If you are a vendor, calling the API without any parameters will give you all published products listed under your vendor profile.'
+      summary: Gets products ids for use in other APIs
+      security:
+        - x-api-key: []
+      parameters:
+        - $ref: '#/components/parameters/format'
+        - in: query
+          name: products
+          description: Comma-separated
+          schema:
+            type: string
+      x-amazon-apigateway-integration:
+        uri: 'https://${stageVariables.host}/public_api/product-ids'
+        responses:
+          default:
+            statusCode: '200'
+        requestParameters:
+          integration.request.header.x-tr-gateway-secret: stageVariables.api_gateway_secret
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: http_proxy
+      operationId: product_ids_get
+      tags:
+        - Product Data
+  /product-scores:
+    get:
+      operationId: product_scores
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        trScore:
+                          type: object
+                          properties:
+                            score:
+                              type: number
+                            max:
+                              type: integer
+                        starScore:
+                          type: object
+                          properties:
+                            score:
+                              type: number
+                            max:
+                              type: integer
+                        reviewCount:
+                          type: integer
+                        ratingCount:
+                          type: integer
+                        ratingsAndReviewsTotalCount:
+                          type: integer
+                        url:
+                          type: string
+      summary: 'Gets product information such as TrustRadius (TR) Score, Star Score, Review Counts'
+      parameters:
+        - in: query
+          name: products
+          description: 'Id of the product or products to get traffic data for in a comma-separated format (e.g., "products=id1,id2").'
+          schema:
+            type: string
+      description: |-
+        Gets product information such as TrustRadius (TR) Score, Star Score, review counts, and relevant product details such as product name, ID, and url.
+
+        Can be used by either:
+        1. Adding a list of comma separated product IDs in the `products` parameter
+        2. Having no `products` parameter, which will return all of your company’s products that are licensed for this API
+      security:
+        - x-api-key: []
+      x-amazon-apigateway-integration:
+        uri: 'https://${stageVariables.host}/public_api/product-scores'
+        responses:
+          default:
+            statusCode: '200'
+        requestParameters:
+          integration.request.header.x-tr-gateway-secret: stageVariables.api_gateway_secret
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: http_proxy
+      tags:
+        - Product Data
+  /reports/visitor-insights/companies:
+    get:
+      operationId: visitor_insights_report
+      parameters:
+        - $ref: '#/components/parameters/filters_start-date'
+        - $ref: '#/components/parameters/filters_end-date'
+        - $ref: '#/components/parameters/ids_products-multiple'
+        - $ref: '#/components/parameters/listPaging_skip'
+        - $ref: '#/components/parameters/listPaging_limit'
+        - $ref: '#/components/parameters/format'
+        - $ref: '#/components/parameters/sort'
+        - in: query
+          name: group
+          description: 'defines time period to group on: day, week (starts on Sunday), month (starts on 1st of the month)'
+          schema:
+            type: string
+            enum:
+              - month
+              - day
+            default: day
+      responses:
+        '200':
+          description: A successful call returns an array of companies from which TrustRadius content related to the specified product(s) was viewed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VisitorInsightsCompany'
+        '400':
+          $ref: '#/components/responses/validation-error'
+        '404':
+          $ref: '#/components/responses/not-found'
+      security:
+        - x-api-key: []
+      x-amazon-apigateway-integration:
+        uri: 'https://${stageVariables.host}/public_api/reports/visitor-insights/companies'
+        responses:
+          default:
+            statusCode: '200'
+        requestParameters:
+          integration.request.header.x-tr-gateway-secret: stageVariables.api_gateway_secret
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: http_proxy
+      description: Gets company firmographic information and aggregate visit counts for each identified company researching the requested product(s) on TrustRadius.
+      summary: Gets company information and aggregate visit counts
+      tags:
+        - Legacy
+  /reports/traffic/pages:
+    get:
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrafficPage'
+        '400':
+          $ref: '#/components/responses/validation-error'
+        '404':
+          $ref: '#/components/responses/not-found'
+      parameters:
+        - in: query
+          name: products
+          required: true
+          description: 'Id of the product or products to get traffic data for in a comma-separated format (e.g., "product=id1,id2").'
+          schema:
+            type: string
+        - $ref: '#/components/parameters/filters_start-date'
+        - $ref: '#/components/parameters/filters_end-date'
+        - in: query
+          name: group
+          description: 'defines time period to group on: day, week (starts on Sunday), month (starts on 1st of the month)'
+          schema:
+            type: string
+            enum:
+              - month
+              - day
+            default: day
+        - $ref: '#/components/parameters/listPaging_limit'
+        - $ref: '#/components/parameters/listPaging_skip'
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/format'
+      x-amazon-apigateway-integration:
+        uri: 'https://${stageVariables.host}/public_api/reports/traffic/pages'
+        responses:
+          default:
+            statusCode: '200'
+        requestParameters:
+          integration.request.header.x-tr-gateway-secret: stageVariables.api_gateway_secret
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: http_proxy
+      summary: Gets page-level traffic data (page views and visits)
+      security:
+        - x-api-key: []
+      operationId: get_traffic_page_types
+      description: 'Gets page-level traffic data (page views and visits) from www.trustradius.com, for pages about the requested product(s) during the requested time period.'
+      tags:
+        - Traffic Data
+  /reports/traffic/products:
+    get:
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrafficProduct'
+        '400':
+          $ref: '#/components/responses/validation-error'
+        '404':
+          $ref: '#/components/responses/not-found'
+      x-amazon-apigateway-integration:
+        uri: 'https://${stageVariables.host}/public_api/reports/traffic/products'
+        responses:
+          default:
+            statusCode: '200'
+        requestParameters:
+          integration.request.header.x-tr-gateway-secret: stageVariables.api_gateway_secret
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: http_proxy
+      security:
+        - x-api-key: []
+      parameters:
+        - in: query
+          name: products
+          description: 'Id of the product or products to get traffic data for in a comma-separated format (e.g., "product=id1,id2").'
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/filters_start-date'
+        - $ref: '#/components/parameters/filters_end-date'
+        - in: query
+          name: group
+          description: 'defines time period to group on: day, week (starts on Sunday), month (starts on 1st of the month)'
+          schema:
+            type: string
+            enum:
+              - month
+              - day
+            default: day
+        - $ref: '#/components/parameters/listPaging_skip'
+        - $ref: '#/components/parameters/listPaging_limit'
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/format'
+      summary: Gets aggregate traffic data (page views and visits)
+      operationId: get_traffic_products
+      description: 'Gets aggregate traffic data (page views and visits) from www.trustradius.com, for pages about the requested product(s) during the requested time period.'
+      tags:
+        - Traffic Data
+  /reports/visitor-insights/pages:
+    get:
+      responses:
+        '200':
+          description: Each row represents a sum of visits and unique visitors to a page on TrustRadius relating to the product. Only visitors that were identified as originating from a participating company on TrustRadius will be returned from this API.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VisitorInsightsPages'
+        '400':
+          $ref: '#/components/responses/validation-error'
+        '404':
+          $ref: '#/components/responses/not-found'
+      x-amazon-apigateway-integration:
+        uri: 'https://${stageVariables.host}/public_api/reports/visitor-insights/pages'
+        responses:
+          default:
+            statusCode: '200'
+        requestParameters:
+          integration.request.header.x-tr-gateway-secret: stageVariables.api_gateway_secret
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: http_proxy
+      summary: Gets company information and page view detail
+      description: 'Gets company firmographic information and page view level detail (products compared, etc) for each identified company researching the requested product(s) on TrustRadius.'
+      security:
+        - x-api-key: []
+      parameters:
+        - $ref: '#/components/parameters/filters_start-date'
+        - $ref: '#/components/parameters/filters_end-date'
+        - $ref: '#/components/parameters/listPaging_skip'
+        - $ref: '#/components/parameters/listPaging_limit'
+        - $ref: '#/components/parameters/ids_products-multiple'
+        - $ref: '#/components/parameters/format'
+        - $ref: '#/components/parameters/sort'
+        - in: query
+          name: group
+          description: 'defines time period to group on: day, week (starts on Sunday), month (starts on 1st of the month)'
+          schema:
+            type: string
+            enum:
+              - month
+              - day
+            default: day
+        - in: query
+          name: product-pages-only
+          description: If set to `true` the report only includes pages of the requested `products`. When `false` (or not set) the report includes all pages viewed by a visitor viewing at least one page of the requested `products`.
+          schema:
+            type: boolean
+      operationId: visitor_insights_report_pages_get
+      tags:
+        - Legacy
+  /reports/syndication/tqw/pages:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/filters_start-date'
+        - $ref: '#/components/parameters/filters_end-date'
+        - $ref: '#/components/parameters/format'
+        - in: query
+          name: date-group
+          description: 'Specifies the date type by which to aggregate the results. Can be day, week, or month (default).'
+          schema:
+            type: string
+            enum:
+              - day
+              - week
+              - month
+        - $ref: '#/components/parameters/sort'
+        - in: query
+          name: vendor
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    total:
+                      type: integer
+                    renders:
+                      type: integer
+                    views:
+                      type: integer
+                    clicksTotal:
+                      type: integer
+                    clicksAllReviews:
+                      type: integer
+                    clicksOneReviewTotal:
+                      type: integer
+                    clicksOneReviewTitle:
+                      type: integer
+                    clicksOneReviewReadMore:
+                      type: integer
+                    productId:
+                      type: string
+                    widgetId:
+                      type: string
+                    link:
+                      type: string
+                    domain:
+                      type: string
+                    page:
+                      type: string
+                    date:
+                      type: string
+                    widgetName:
+                      type: string
+                    productName:
+                      type: string
+                    vendorName:
+                      type: string
+                  required:
+                    - total
+                    - renders
+                    - views
+                    - clicksTotal
+                    - clicksAllReviews
+                    - clicksOneReviewTotal
+                    - clicksOneReviewTitle
+                    - clicksOneReviewReadMore
+                    - productId
+                    - widgetId
+                    - date
+                    - widgetName
+                    - productName
+                    - vendorName
+      x-amazon-apigateway-integration:
+        uri: 'https://${stageVariables.host}/public_api/reports/syndication/tqw/pages'
+        responses:
+          default:
+            statusCode: '200'
+        requestParameters:
+          integration.request.header.x-tr-gateway-secret: stageVariables.api_gateway_secret
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: http_proxy
+      security:
+        - x-api-key: []
+      description: Gets information about TrustQuotes for Web performance.
+      summary: Gets TrustQuotes for Web performance
+      operationId: tqw_pages_get
+      tags:
+        - TrustQuotes
+  /trustquotes:
+    get:
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrustQuotes'
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrustQuotes'
+        '400':
+          $ref: '#/components/responses/validation-error'
+        '404':
+          $ref: '#/components/responses/not-found'
+      summary: Gets TrustQuotes
+      parameters:
+        - $ref: '#/components/parameters/format'
+        - $ref: '#/components/parameters/filters_start-date'
+        - $ref: '#/components/parameters/filters_end-date'
+        - in: query
+          name: vendors
+          description: 'Id of the vendor or vendors to get data for in a comma-separated format (e.g., "vendors=id1,id2").'
+          schema:
+            type: array
+            items:
+              type: string
+        - $ref: '#/components/parameters/ids_products-multiple'
+        - in: query
+          name: include-anonymous
+          description: Whether to include quotes that are in anonymous reviews or not.
+          schema:
+            type: boolean
+            default: false
+        - in: query
+          name: min-rating
+          description: The minimum rating a review must have for a quote to be returned.
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 10
+        - in: query
+          name: max-quotes
+          description: The maximum number of quotes to return.
+          schema:
+            type: integer
+        - in: query
+          name: tags
+          description: 'Id of the tag or tags to get data for in a comma-separated format (e.g., "tags=id1,id2").'
+          schema:
+            type: array
+            items:
+              type: string
+      security:
+        - x-api-key: []
+      description: |-
+        Provides access to quotes in product reviews.
+
+        #### How do I get Review quotes having specific tags?
+
+        Call the `trustquotes` with the `tags` query parameter set to the Tag IDs of the Tags you're interested in:
+
+        ```
+        curl -X GET -H 'x-api-key: <api-key>' \
+          'https://api.trustradius.com/v1/trustquotes?include-anonymous=true&max-review-age=365&vendors=<vendor-id>&tags=<tag-id>,<tag-id>'
+        ```
+      tags:
+        - TrustQuotes
+      x-amazon-apigateway-integration:
+        uri: 'https://${stageVariables.host}/public_api/trustquotes'
+        responses:
+          default:
+            statusCode: '200'
+        requestParameters:
+          integration.request.header.x-tr-gateway-secret: stageVariables.api_gateway_secret
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: http_proxy
+      operationId: trustquotes_get
+  /tags:
+    get:
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tags'
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tags'
+        '400':
+          $ref: '#/components/responses/validation-error'
+        '404':
+          $ref: '#/components/responses/not-found'
+      summary: Gets Tags used for tagging TrustQuotes
+      security:
+        - x-api-key: []
+      parameters:
+        - in: query
+          name: vendors
+          description: 'Id of the vendor or vendors to get data for in a comma-separated format (e.g., "vendors=id1,id2").'
+          schema:
+            type: array
+            items:
+              type: string
+        - $ref: '#/components/parameters/ids_products-multiple'
+        - in: query
+          name: tag-groups
+          description: 'Id of the tag group or tag groups to get data for in a comma-separated format (e.g., "tag-groups=id1,id2").'
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: tags
+          description: 'Id of the tag or tags to get data for in a comma-separated format (e.g., "tags=id1,id2").'
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: custom-only
+          description: 'Get only vendor-defined tags. Shared tags (those defined by TrustRadius) will not be returned. '
+          schema:
+            type: boolean
+            default: false
+      x-amazon-apigateway-integration:
+        uri: 'https://${stageVariables.host}/public_api/tags'
+        responses:
+          default:
+            statusCode: '200'
+        requestParameters:
+          integration.request.header.x-tr-gateway-secret: stageVariables.api_gateway_secret
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: http_proxy
+      description: |
+        Gets Tags used for tagging TrustQuotes.
+
+        #### How do I find the Tag Group ID? I just know its name.
+
+        Call the `tags` endpoint with the Vendor ID only, then find the ID of the Tag Group you want:
+
+        ```
+        curl -X GET -H 'x-api-key: <api-key> \
+          'https://api.trustradius.com/v1/tags?custom-only=true&vendors=<vendor-id>''
+        ```
+
+        #### How do I find all the Tags belonging to a Tag Group?
+
+        Call the `tags` endpoint with the Tag Group ID in the `tag-groups` query parameter, `custom-only=true` to exclude TrustRadius-created Tags:
+
+        ```
+        curl -X GET -H 'x-api-key: <api-key>' \
+          'https://api.trustradius.com/v1/tags?custom-only=true&vendors=<vendor-id>&tag-groups=<tag-group-id>'
+        ```
+      operationId: tags_get
+      tags:
+        - TrustQuotes
+  /intent:
+    get:
+      operationId: intent_data
+      parameters:
+        - in: header
+          name: x-api-key
+          schema:
+            type: string
+        - in: query
+          name: start-date
+          required: false
+          description: 'An ISO 8601 date string specifying the starting date of the activity date range. Activities on this date will be included in the response. When neither the start-date and end-date parameters are included, the default start-date is fourteen days prior to the current day. When only the end-date is specified, the start-date dafauts to fourteen days prior to the end-date not to exceed fourty-five days prior to the current day.'
+          schema:
+            type: string
+            format: full-date
+        - in: query
+          name: end-date
+          required: false
+          description: 'An ISO8601 date string specifying the ending date of the activity date range. Activities on this date will not be included in the response. When neither the start-date and end-date parameters are included, the default end-date is the current day. When only the start-date is specified, the end-date dafauts to fourteen after the start-date not to exceed the current day.'
+          schema:
+            type: string
+            format: full-date
+        - in: query
+          name: detailed
+          required: false
+          description: 'When set to ''true'', extra details about the account are included in the response. When set to ''false'', only the account ID, name and domain are included in the response. The default value is ''false''.'
+          schema:
+            type: boolean
+      responses:
+        '200':
+          $ref: '#/components/responses/intent-data'
+        '400':
+          $ref: '#/components/responses/validation-error'
+        '404':
+          $ref: '#/components/responses/not-found'
+      security:
+        - x-api-key: []
+      x-amazon-apigateway-integration:
+        uri: 'https://${stageVariables.host}/public_api/intent'
+        responses:
+          default:
+            statusCode: '200'
+        requestParameters:
+          integration.request.header.x-tr-gateway-secret: stageVariables.api_gateway_secret
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: http_proxy
+      description: 'Gets intent data about accounts researching products, categories, competitors, and more on trustradius.com. Includes company firmographic information, visitor counts, and activity details for intent shown by identified companies.'
+      summary: Gets intent data
+      tags:
+        - Intent Data
+  '/accounts/{account_id}':
+    get:
+      operationId: account_details
+      responses:
+        '200':
+          description: A successful call returns company firmographic information about the specified account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountDetail'
+        '400':
+          $ref: '#/components/responses/validation-error'
+        '404':
+          $ref: '#/components/responses/not-found'
+      security:
+        - x-api-key: []
+      x-amazon-apigateway-integration:
+        uri: 'https://${stageVariables.host}/public_api/accounts/{account_trid}'
+        responses:
+          default:
+            statusCode: '200'
+        requestParameters:
+          integration.request.header.x-tr-gateway-secret: stageVariables.api_gateway_secret
+          integration.request.path.account_trid: method.request.path.account_trid
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: http_proxy
+      description: 'Gets company firmographic information, visitor counts and visit activity for each identified company researching the caller''s product and categories on TrustRadius.'
+      summary: 'Gets firmographic information , visitor counts and visit activity for each identified company researching the caller''s product and categories on TrustRadius.'
+      tags:
+        - Legacy
+    parameters:
+      - schema:
+          type: string
+        name: account_id
+        description: The unique identifier for the account being queries.
+        in: path
+        required: true
+servers:
+  - url: 'https://api.trustradius.com/v1'
+tags:
+  - name: Reports
+    description: Paths that return report results
+  - name: Intent Data
+  - name: Product Data
+  - name: Traffic Data
+  - name: TrustQuotes
+  - name: Webhooks
+  - name: Legacy
+components:
+  parameters:
+    sort:
+      in: query
+      name: sort
+      description: Specifies the data fields to sort by as a comma-separated list of fields. Field names can be preceded by a hyphen to indicate that they should be sorted in descending order of values.
+      schema:
+        type: string
+    format:
+      name: format
+      in: query
+      description: Specifies the format of the results. Can be either "csv" or "json" (the default).
+      schema:
+        type: string
+        enum:
+          - csv
+          - json
+        default: json
+    fields:
+      name: fields
+      in: query
+      description: 'The names of fields to include in the returned data, specified as a comma-separated list.'
+      schema:
+        type: string
+    listPaging_skip:
+      name: skip
+      in: query
+      description: The number of records to skip before returning records. This is most useful in combination with "limit" for paging through results.
+      schema:
+        type: integer
+        minimum: 0
+    listPaging_limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return.
+      schema:
+        type: integer
+        minimum: 1
+    filters_start-date:
+      name: start-date
+      in: query
+      description: 'For time-series data, this filters the results to include those occurring on or after the given date. Expected to be in ISO 8601 format.'
+      schema:
+        type: string
+        format: date
+    filters_end-date:
+      name: end-date
+      in: query
+      description: 'For time-series data, this filters the results to include those occurring before or on the given date. Expected to be in ISO 8601 format.'
+      schema:
+        type: string
+        format: date
+    filters_start_time:
+      name: start_time
+      in: query
+      description: This filters intent data to include activities occurring on or after the specified date/time. This is expected to be in ISO 8601 format.
+      schema:
+        type: string
+        format: date-time
+    filters_stop_time:
+      name: stop_time
+      in: query
+      description: This filters intent data to include activities occurring on or before the specified date/time. This is expected to be in ISO 8601 format.
+      schema:
+        type: string
+        format: date-time
+    filters_accounts:
+      name: accounts
+      in: query
+      description: This filters intent based on the account domains passed in. This is expected to be a comma separated list of domains.
+      schema:
+        type: string
+    filters_intent:
+      name: intent
+      in: query
+      description: This filters intent based on the activity types passed in. This is expected to be a comma separated list of activity names.
+      schema:
+        type: string
+    ids_products-multiple:
+      name: products
+      in: query
+      description: 'Id of the product or products to get traffic data for in a comma-separated format (e.g., "products=id1,id2").'
+      schema:
+        type: string
+  responses:
+    validation-error:
+      description: One or more input parameters failed validation.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                enum:
+                  - ValidationError
+                default: ValidationError
+                description: The name is always "ValidationError".
+              status:
+                type: number
+                enum:
+                  - 400
+                default: 400
+                description: The HTTP status code is always 400.
+              message:
+                type: string
+                description: An error message. This may be a generic error message if parameter-specific errors are also included in the `errors` array.
+              errors:
+                type: array
+                description: 'This can be an array of message strings or an array of objects that contain a message, field name, and location.'
+                items:
+                  oneOf:
+                    - type: string
+                      description: Any error message string.
+                    - type: object
+                      properties:
+                        param:
+                          type: string
+                          description: The name of the input parameter that is not valid.
+                        msg:
+                          type: string
+                          description: An error message specifically for this parameter.
+                        location:
+                          type: string
+                          enum:
+                            - body
+                            - query
+                            - param
+                            - header
+                          description: 'The input location (path parameter, body property, query parameter, or header value) where this parameter was received.'
+    not-found:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                enum:
+                  - NotFound
+                description: The name is always "NotFound".
+              status:
+                type: number
+                enum:
+                  - 404
+                description: The HTTP status code is always 404.
+              message:
+                type: string
+    intent-registration:
+      description: the intent registration object
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+              partner:
+                type: object
+                properties:
+                  customerId:
+                    type: string
+                  customerName:
+                    type: string
+                  name:
+                    type: string
+              intent_target:
+                type: string
+              trustradius:
+                type: object
+                properties:
+                  customerId:
+                    type: string
+                  customerName:
+                    type: string
+              licensedProducts:
+                type: array
+                items:
+                  type: string
+              licensedCategories:
+                type: array
+                items:
+                  type: string
+    deferred_status:
+      description: An API request may be deferred for later processing. This response provides a URL endpoint that can be called to query the status of the deferred request.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              deferred_url:
+                type: string
+                description: A URL endpoint that can be called to quesy the status of the deferred request.
+    deferred_response:
+      description: Provides the status of a deferred request.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              '_id:':
+                type: string
+                description: The ID of the deferred response.
+              'title:':
+                type: string
+                description: The title of the deferred response.
+              'params:':
+                type: string
+                description: A string encoded value for the request parameters.
+              'state:':
+                type: string
+                description: 'The state of the deferred request. One of pending, running, complete, failed.'
+              'type:':
+                type: string
+                description: The type of request.
+              'errorMessage:':
+                type: string
+                description: The error message. Only present if the state is failed.
+              location:
+                type: object
+                properties:
+                  s3Bucket:
+                    type: string
+                    description: The name of an S3 buckct where the deferred response has been delivered.
+                  s3Key:
+                    type: string
+                    description: The S3 object key of the deferred response.
+                  md5:
+                    type: string
+                    description: The MD5 checksum of the data at the time of upload as computed on the server.
+                  bytes:
+                    type: number
+                    description: The number of bytes uploaded.
+              'created:':
+                type: string
+                description: When the request was received.
+              'modified:':
+                type: string
+                description: When the request was last modified.
+    intent-data:
+      description: A successful call returns an object containing a list of accounts which have been active during the requested date range. Each account contains a list of the activities performed by vistors from the account.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              start_date:
+                type: string
+                description: The actual start date used when collecting data. This will reflect the start-date parameter if specified or the computed default value.
+              end_date:
+                type: string
+                description: The actual end date used when collecting data. This will reflect the end-date parameter if specified or the computed default value.
+              accounts:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: The unique identifier of the account.
+                    url:
+                      type: string
+                      description: The URL path to be used in the _/accounts_ API call to collect more information about the account.
+                    name:
+                      type: string
+                      description: The account name.
+                    domain:
+                      type: string
+                      description: The account domain.
+                    description:
+                      type: string
+                      description: A description about the account. This is only included when the _detailed_ parameter is true.
+                    companySize:
+                      type: object
+                      properties:
+                        size:
+                          type: string
+                          description: A representation of the company size specified as a range in the number of employees. This is only included when the _detailed_ parameter is true.
+                        order:
+                          type: integer
+                          description: The ordinal of the _size_ value in the list of all possible values. This is only included when the _detailed_ parameter is true.
+                    sector:
+                      type: string
+                      description: The business sector in which the accouny operates. This is only included when the _detailed_ parameter is true.
+                    industry:
+                      type: string
+                      description: The industry in which the account operates. This is only included when the _detailed_ parameter is true.
+                    subIndustry:
+                      type: string
+                      description: The sub-industry in which the account operates. This is only included when the _detailed_ parameter is true.
+                    sicCode:
+                      type: string
+                      description: The Standard Industrial Code for the account. This is only included when the _detailed_ parameter is true.
+                    city:
+                      type: string
+                      description: The city where the account's headquarters is located. This is only included when the _detailed_ parameter is true.
+                    state:
+                      type: string
+                      description: The state where the account's headquarters is located. This is only included when the _detailed_ parameter is true.
+                    stateCode:
+                      type: string
+                      description: The abbreviations of the state where the account's headquarters is located. This is only included when the _detailed_ parameter is true.
+                    country:
+                      type: string
+                      description: The country where the account's headquarters is located. This is only included when the _detailed_ parameter is true.
+                    countryCode:
+                      type: string
+                      description: The abbreviation of the country where the account's headquarters is located. This is only included when the _detailed_ parameter is true.
+                    postalCode:
+                      type: string
+                    facebook:
+                      type: string
+                      description: The Facebook handle for the account. This is only included when the _detailed_ parameter is true.
+                    twitter:
+                      type: string
+                      description: The Twitter handle for the account. This is only included when the _detailed_ parameter is true.
+                    linkedIn:
+                      type: string
+                      description: The LinkedIn handle for the account. This is only included when the _detailed_ parameter is true.
+                    annualRevenue:
+                      type: string
+                      description: The annual revenue for the account if the account is public. This is only included when the _detailed_ parameter is true.
+                    activities:
+                      type: array
+                      description: A list of activities performed by the account during the specified date range.
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            description: The unique ID of the activity.
+                          type:
+                            type: string
+                            description: 'The type of activity, e.g. _view_ or _click_. '
+                          date:
+                            type: string
+                            format: full-date
+                            description: The date the activity took place.
+                          label:
+                            type: string
+                            description: 'The subject of the activity type, e.g. _Product Pricing Link_, _Product Reviews_, or _Comparison_.'
+                          objects:
+                            type: array
+                            description: A list providing details about the objects involved in the activity.
+                            items:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  description: 'The type of object, e.g. _roduct_, _review_, _category_.'
+                                id:
+                                  type: string
+                                  description: The unique ID of the object.
+                                name:
+                                  type: string
+                                  description: The name of the object.
+                          webUrl:
+                            type: string
+                            description: the full URL of the page on the TrustRadius platform where the activity took place.
+                          location:
+                            type: object
+                            description: The location of the visitor when the activity was executed
+                            properties:
+                              city:
+                                type: string
+                                description: The city where the visitor was located when the activity was executed.
+                              state:
+                                type: string
+                                description: The state where the visitor was located when the activity was executed.
+                              stateCode:
+                                type: string
+                                description: The state code where the visitor was located when the activity was executed.
+                              country:
+                                type: string
+                                description: The country where the visitor was located when the activity was executed.
+                              countryCode:
+                                type: string
+                                description: The country code where the visitor was located when the activity was executed.
+                          human_readable:
+                            type: string
+                            description: A piece of text describing the activity.
+                          source:
+                            type: string
+                            description: 'Identifies the reason an activity was included in the response. Possible values are _Licensed Product_, _Category_ and _Competitors_.'
+                    visitorCount:
+                      type: integer
+                      description: The number of visitors from this account.
+              more:
+                type: boolean
+                description: A value of true indicates that there is more data available on the server for the specified date range.
+          examples:
+            response:
+              value:
+                start-date: '2020-05-02'
+                end-date: '2020-05-03'
+                accounts:
+                  - id: 5e8bd2974a29100004c40cbb
+                    name: Some Company
+                    domain: somecompany.com
+                    url: /accounts/5e8bd2974a29100004c40cbb
+                    description: This is some sort of company description.
+                    companySize:
+                      size: 1 to 10
+                      order: 1
+                    sector: Industrials
+                    industry: Professional Services
+                    subIndustry: Consulting
+                    sicCode: '33'
+                    city: Crewe
+                    state: Cheshire East
+                    stateCode: CE
+                    country: United Kingdom
+                    countryCode: GB
+                    postalCode: CW1 6DD
+                    linkedIn: company/trimo
+                    twitter: trimo
+                    facebook: trimo
+                    activities:
+                      - id: 5eae37d021063f0031f2b825
+                        date: '2020-05-02'
+                        type: view
+                        label: Comparison
+                        objects:
+                          - type: product
+                            id: 536bf38fd35ad20200000a53
+                            name: My Product
+                            category: My Category
+                          - type: product
+                            id: 536bf38fd35ad20200000a64
+                            name: Another Product
+                            category: Some Category
+                        webUrl: 'http://trustradius.com/compare-products/my-product-vs-another-product'
+                        location:
+                          city: Austin
+                          state: Texas
+                          stateCode: TX
+                          country: United States
+                          countryCode: USA
+                        human_readable: Viewed a comparison of My Product vs Another Product
+                        source: Licensed Product
+                    visitorCount: 12
+                more: false
+  securitySchemes:
+    x-api-key:
+      name: x-api-key
+      type: apiKey
+      in: header
+      description: All API calls must send an API key in the "x-api-key" HTTP header. TrustRadius clients can get their key from their Client Success Manager.
+  schemas:
+    TrafficProduct:
+      type: object
+      title: Traffic Product
+      properties:
+        date:
+          type: string
+        vendor:
+          type: string
+        productId:
+          type: string
+        product:
+          type: string
+        categoryName:
+          type: string
+        categoryId:
+          type: string
+        totalPageViews:
+          type: integer
+        totalVisits:
+          type: integer
+        totalVisitors:
+          type: integer
+        totalCategoryPageViews:
+          type: integer
+        totalCategoryVisits:
+          type: integer
+        totalCategoryVisitors:
+          type: integer
+      required:
+        - date
+        - product
+        - productId
+        - categoryName
+        - categoryId
+        - totalPageViews
+        - totalVisits
+        - totalVisitors
+    TrafficPage:
+      title: Traffic Page
+      type: object
+      properties:
+        date:
+          type: string
+        vendor:
+          type: string
+        productId:
+          type: string
+        product:
+          type: string
+        pageType:
+          type: string
+        pageTitle:
+          type: string
+        url:
+          type: string
+        totalPageViews:
+          type: integer
+        totalVisitors:
+          type: integer
+    VisitorInsightsCompany:
+      title: Visitor Insights Company
+      type: object
+      properties:
+        companyName:
+          type: string
+        companyCategory:
+          description: Standard Industrial Classification name
+          nullable: true
+          type: string
+        companySicCode:
+          description: Standard Industrial Classification code
+          nullable: true
+          type: string
+        companySize:
+          description: A range of numbers of employees
+          nullable: true
+          type: string
+        companyCity:
+          nullable: true
+          type: string
+        companyRegion:
+          nullable: true
+          type: string
+        companyRegionCode:
+          nullable: true
+          type: string
+        companyCountry:
+          nullable: true
+          type: string
+        companyCountryCode:
+          minLength: 2
+          maxLength: 2
+          nullable: true
+          type: string
+        companyFacebook:
+          nullable: true
+          type: string
+        companyLinkedinId:
+          nullable: true
+          type: string
+        companyTwitter:
+          nullable: true
+          type: string
+        companyWebsite:
+          nullable: true
+          type: string
+        visits:
+          type: integer
+          minimum: 0
+          description: The number of visits from this company during the specified date range.
+        date:
+          type: string
+          format: date-time
+        product:
+          type: string
+        productId:
+          type: string
+        vendor:
+          type: string
+    VisitorInsightsPages:
+      title: Visitor Insights Pages
+      description: 'Similar to Visitor Insights Company model, but adds `num_visitors` and page-specific information.'
+      type: object
+      properties:
+        companyName:
+          type: string
+        companyCategory:
+          description: Standard Industrial Classification name
+          nullable: true
+          type: string
+        companySicCode:
+          description: Standard Industrial Classification code
+          nullable: true
+          type: string
+        companySize:
+          description: A range of numbers of employees
+          nullable: true
+          type: string
+        companyCity:
+          nullable: true
+          type: string
+        companyRegion:
+          nullable: true
+          type: string
+        companyRegionCode:
+          nullable: true
+          type: string
+        companyCountry:
+          nullable: true
+          type: string
+        companyCountryCode:
+          minLength: 2
+          maxLength: 2
+          nullable: true
+          type: string
+        companyFacebook:
+          nullable: true
+          type: string
+        companyLinkedinId:
+          nullable: true
+          type: string
+        companyTwitter:
+          nullable: true
+          type: string
+        companyWebsite:
+          nullable: true
+          type: string
+        visits:
+          type: integer
+          minimum: 0
+          description: The number of visits from this company during the specified date range.
+        date:
+          type: string
+          format: date-time
+        visitors:
+          type: integer
+          minimum: 1
+        pageType:
+          type: string
+        pageTitle:
+          type: string
+        url:
+          type: string
+        product:
+          type: string
+        productId:
+          type: string
+        vendor:
+          type: string
+    TrustQuotes:
+      type: object
+      title: Trust Quotes
+      properties:
+        vendor:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        product:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        review:
+          type: object
+          properties:
+            id:
+              type: string
+            editedDate:
+              type: string
+            publishedDate:
+              type: string
+            heading:
+              type: string
+            url:
+              type: string
+            rating:
+              type: integer
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            pictureUrl:
+              type: string
+            name:
+              type: string
+            company:
+              type: object
+              properties:
+                name:
+                  type: string
+                size:
+                  type: string
+                industry:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+            position:
+              type: object
+              properties:
+                title:
+                  type: string
+                jobType:
+                  type: string
+                department:
+                  type: string
+        id:
+          type: string
+        isSummary:
+          type: boolean
+        isAnonymous:
+          type: boolean
+        created:
+          type: string
+        taggedreviewStatus:
+          type: string
+        text:
+          type: string
+        allTags:
+          type: array
+          items:
+            type: string
+        allTagNames:
+          type: array
+          items:
+            type: string
+    Tags:
+      type: object
+      title: Tags
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        sequence:
+          type: number
+        vendor:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        products:
+          type: object
+          properties:
+            ids:
+              type: array
+              items:
+                type: string
+            names:
+              type: array
+              items:
+                type: string
+        tagGroup:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            type:
+              type: string
+            sequence:
+              type: number
+            scope:
+              type: string
+    AccountDetail:
+      title: AccountDetail
+      allOf:
+        - $ref: '#/components/schemas/Account'
+        - type: object
+          properties:
+            visitors:
+              type: array
+              items:
+                $ref: '#/components/schemas/Visitor'
+    Account:
+      title: Account
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        company:
+          type: object
+          properties:
+            name:
+              type: string
+            domain:
+              nullable: true
+              type: string
+            industry:
+              description: Standard Industrial Classification name
+              nullable: true
+              type: string
+            sicCode:
+              description: Standard Industrial Classification code for major industry
+              nullable: true
+              type: string
+            companySize:
+              description: A range of numbers of employees
+              nullable: true
+              type: string
+            city:
+              nullable: true
+              type: string
+            state:
+              nullable: true
+              type: string
+            stateCode:
+              nullable: true
+              type: string
+            country:
+              nullable: true
+              type: string
+            countryCode:
+              minLength: 2
+              maxLength: 2
+              nullable: true
+              type: string
+            postalCode:
+              nullable: true
+              type: string
+            facebook:
+              nullable: true
+              type: string
+            linkedIn:
+              nullable: true
+              type: string
+            twitter:
+              nullable: true
+              type: string
+    AccountActivity:
+      title: AccountActivity
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        domain:
+          type: string
+        activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Activity'
+    Activity:
+      title: Activity
+      type: object
+      properties:
+        id:
+          type: string
+        date:
+          type: string
+          format: date
+        type:
+          type: string
+          enum:
+            - click
+            - download
+            - like
+            - view
+        label:
+          type: string
+        human_readable:
+          type: string
+        objects:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              id:
+                type: string
+              name:
+                type: string
+              web_url:
+                type: string
+    IntentRegistration:
+      title: IntentRegistration
+      type: object
+      properties:
+        partner:
+          type: string
+        customerId:
+          type: string
+        customerName:
+          type: string
+        customerDomain:
+          type: string
+        intentTarget:
+          type: string
+    NameValuePair:
+      title: NameValuePair
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+    VisitorDetail:
+      title: VisitorDetail
+      allOf:
+        - $ref: '#/components/schemas/Visitor'
+        - type: object
+          properties:
+            visits:
+              type: array
+              items:
+                $ref: '#/components/schemas/VisitDetail'
+    Visitor:
+      title: Visitor
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        account_id:
+          type: string
+    VisitDetail:
+      title: VisitDetail
+      allOf:
+        - $ref: '#/components/schemas/Visit'
+        - type: object
+          properties:
+            activity_count:
+              type: integer
+            visitor:
+              type: object
+              properties:
+                id:
+                  type: string
+                account_id:
+                  type: string
+    Visit:
+      title: Visit
+      type: object
+      properties:
+        id:
+          type: string
+        date:
+          type: string
+          format: date-time
+    ProductScores:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              trScore:
+                type: object
+                properties:
+                  score:
+                    type: number
+                  max:
+                    type: integer
+              starScore:
+                type: object
+                properties:
+                  score:
+                    type: number
+                  max:
+                    type: integer
+              reviewCount:
+                type: integer
+              ratingCount:
+                type: integer
+              ratingsAndReviewsTotalCount:
+                type: integer
+              url:
+                type: string

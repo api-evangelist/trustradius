@@ -1,0 +1,114 @@
+generated: '2026-08-14'
+method: derived
+source: >-
+  openapi/_original/trustradius-api-openapi.yml (provider-published OpenAPI 3.0.0 v1.1). Searched
+  for a TrustRadius-operated MCP server on 2026-08-14 and found none — no mcp.trustradius.com, no
+  MCP node in the Stoplight developer portal table-of-contents, no @trustradius npm scope, and no
+  /.well-known/oauth-protected-resource on any host.
+provider: TrustRadius
+providerId: trustradius
+status: candidate
+description: >-
+  TrustRadius does not ship an MCP server. This is an API Evangelist candidate tool set derived
+  1:1 from the eleven operations in the provider's published OpenAPI, so that the agent surface
+  TrustRadius could expose is visible and costed. Nothing here is operated by TrustRadius and no
+  endpoint below is callable — the `endpoint` field is deliberately empty.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: api-key
+  verified: derived
+  note: >-
+    mode `none` means nobody ships a server — not that one is hosted somewhere we could not reach.
+    If TrustRadius were to ship one, auth would be the existing per-vendor `x-api-key` header; there
+    is no OAuth surface to build on.
+search_evidence:
+  - url: https://apidocs.trustradius.com/ (Stoplight table-of-contents, project cHJqOjc5NzU2)
+    status: 200
+    finding: >-
+      Three nodes only — the API overview article, the FAQ article, and the REST API Reference.
+      No MCP, agent or tools node.
+  - url: https://api.trustradius.com/.well-known/oauth-protected-resource
+    status: 403
+    finding: API Gateway deny; no MCP resource metadata.
+  - url: https://registry.npmjs.org/-/v1/search?text=trustradius
+    status: 200
+    finding: No first-party package of any kind, MCP or otherwise.
+candidate_tools:
+  - name: trustradius_get_product_ids
+    operationId: product_ids_get
+    rest: GET /product-ids
+    category: Product Data
+    description: >-
+      Resolve TrustRadius product ids (and the owning vendor id) from product slugs. With no
+      parameters, returns every published product under the caller's vendor profile. This is the
+      bootstrap tool — every other tool needs an id from here.
+    inputs_from_spec: [format, products]
+  - name: trustradius_get_product_scores
+    operationId: product_scores
+    rest: GET /product-scores
+    category: Product Data
+    description: TrustRadius (TR) Score, star score and review counts for one or more products.
+  - name: trustradius_get_intent
+    operationId: intent_data
+    rest: GET /intent
+    category: Intent Data
+    description: >-
+      Downstream intent activity — which accounts are researching the vendor's products, competitor
+      products and category pages.
+    inputs_from_spec: [start_time, stop_time, accounts, intent, skip, limit, sort, fields, format]
+  - name: trustradius_get_traffic_products
+    operationId: get_traffic_products
+    rest: GET /reports/traffic/products
+    category: Traffic Data
+    description: Aggregate page views, visits and visitors per product per day, with category totals.
+  - name: trustradius_get_traffic_pages
+    operationId: get_traffic_page_types
+    rest: GET /reports/traffic/pages
+    category: Traffic Data
+    description: Page-level page views and visitors by page type and URL.
+  - name: trustradius_get_trustquotes
+    operationId: trustquotes_get
+    rest: GET /trustquotes
+    category: TrustQuotes
+    description: Licensed review excerpts with their tags, for syndication into vendor-owned channels.
+  - name: trustradius_get_tags
+    operationId: tags_get
+    rest: GET /tags
+    category: TrustQuotes
+    description: The tag vocabulary used to filter and organize TrustQuotes.
+  - name: trustradius_get_tqw_pages
+    operationId: tqw_pages_get
+    rest: GET /reports/syndication/tqw/pages
+    category: TrustQuotes
+    description: Performance of TrustQuotes for Web widgets by page.
+  - name: trustradius_get_visitor_insights_companies
+    operationId: visitor_insights_report
+    rest: GET /reports/visitor-insights/companies
+    category: Legacy
+    description: Firmographics and visit counts for identified companies viewing a product.
+    note: Provider tags this operation `Legacy`.
+  - name: trustradius_get_visitor_insights_pages
+    operationId: visitor_insights_report_pages_get
+    rest: GET /reports/visitor-insights/pages
+    category: Legacy
+    description: Identified-company visit detail broken out by page.
+    note: Provider tags this operation `Legacy`.
+  - name: trustradius_get_account
+    operationId: account_details
+    rest: 'GET /accounts/{account_id}'
+    category: Legacy
+    description: Firmographics, visitor counts and visit activity for one identified company.
+    note: Provider tags this operation `Legacy`.
+agent_notes:
+  - Every tool is read-only; there is no write path to guard.
+  - Budget calls against the published 10 requests/second (600/minute) limit; no rate-limit response
+    headers exist, so an agent cannot detect throttling from the response.
+  - Paging is offset-based (`skip`/`limit`) with no total count, so an agent must page until a short
+    page returns.
+  - Ask for `format=json`; the API selects format by query parameter, not by the Accept header.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

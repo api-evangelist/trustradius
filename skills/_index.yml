@@ -1,0 +1,58 @@
+generated: '2026-08-14'
+method: generated
+source: >-
+  openapi/_original/trustradius-api-openapi.yml (provider-published OpenAPI 3.0.0 v1.1),
+  https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api,
+  https://apidocs.trustradius.com/docs/public-api/ZG9jOjMzODE1NA-faq,
+  conventions/trustradius-conventions.yml, errors/trustradius-problem-types.yml
+provider: TrustRadius
+providerId: trustradius
+description: >-
+  Packaged Agent Skills for the TrustRadius Public API. TrustRadius publishes no AGENTS.md and no
+  skills of its own; these are authored by API Evangelist and every operationId referenced is
+  verified against the provider's published contract. Start with resolve-product-ids — the other
+  three depend on it, because no TrustRadius endpoint accepts a product name or slug.
+skills:
+  - name: trustradius-resolve-product-ids
+    file: trustradius-resolve-product-ids.md
+    summary: Resolve product and vendor ids from slugs; the mandatory bootstrap for every other flow.
+    operations:
+      - product_ids_get
+  - name: trustradius-pull-downstream-intent
+    file: trustradius-pull-downstream-intent.md
+    summary: Pull account-level intent activity and page it safely for CRM/ABM activation.
+    operations:
+      - product_ids_get
+      - intent_data
+  - name: trustradius-syndicate-trustquotes
+    file: trustradius-syndicate-trustquotes.md
+    summary: Retrieve licensed review quotes plus the tag vocabulary, and measure widget performance.
+    operations:
+      - product_ids_get
+      - tags_get
+      - trustquotes_get
+      - tqw_pages_get
+  - name: trustradius-report-profile-traffic
+    file: trustradius-report-profile-traffic.md
+    summary: Product- and page-level traffic reporting, plus the Legacy visitor-insights path.
+    operations:
+      - product_ids_get
+      - get_traffic_products
+      - get_traffic_page_types
+      - visitor_insights_report
+      - visitor_insights_report_pages_get
+      - account_details
+coverage:
+  published_operations: 11
+  operations_covered: 10
+  uncovered:
+    - product_scores
+  note: >-
+    `product_scores` (GET /product-scores) has no dedicated skill. It is a single unparameterized
+    read taking the ids already resolved by trustradius-resolve-product-ids, and its response shape
+    is fully declared in the spec — `products[].trScore{score,max}`, `starScore{score,max}`,
+    `reviewCount`, `ratingCount`, `ratingsAndReviewsTotalCount`, `url` — with no paging, filtering
+    or ordering decisions for a skill to teach.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

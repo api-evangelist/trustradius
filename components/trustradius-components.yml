@@ -1,0 +1,73 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://trustradius.freshdesk.com/support/solutions/articles/43000676759-trustquotes-for-web-widget-and-trustquotes-api-which-should-i-use-for-syndication-,
+  https://trustradius.freshdesk.com/support/solutions/articles/43000534733-trustquotes-for-web,
+  https://solutions.trustradius.com/how-to-make-a-trustquotes-for-web-widget/,
+  https://solutions.trustradius.com/products/content-licensing/,
+  https://solutions.trustradius.com/pricing/
+provider: TrustRadius
+providerId: trustradius
+description: >-
+  TrustRadius ships client-side embeds as an alternative to calling the API, not as a companion to
+  it. The vendor-facing product is TrustQuotes for Web (TQW) — a review-quote widget a marketer
+  builds inside the Vendor Portal and installs as a JavaScript snippet. There is no npm-distributed
+  element library, no versioned loader script, and no public component reference; the snippet is
+  generated per widget and is not addressable outside the portal.
+families:
+  - name: TrustQuotes for Web (TQW)
+    kind: embeddable-widget
+    distribution: javascript-snippet
+    registry: none
+    loader_package: null
+    version: null
+    version_note: >-
+      No public version identifier exists. The snippet is generated inside the Vendor Portal per
+      widget, so a consumer cannot pin, diff, or audit what they are loading — and neither can we.
+    build_surface: TrustRadius Vendor Portal (no code required)
+    install: >-
+      Build the widget in the Vendor Portal with tags and filters applied, optionally add custom CSS,
+      then "copy the JavaScript snippet for your widget" and paste it into the landing page.
+    capabilities:
+      - Renders TrustRadius review quotes filtered by tag directly on a vendor's own pages.
+      - Star ratings render automatically and are reflected in Google results.
+      - Out-of-box styling with CSS customization to match brand.
+    constraints:
+      - One product per widget — TQW does not support multi-product widgets. The TrustQuotes API is
+        the documented alternative when multiple products are needed.
+      - Requires a Content Licensing entitlement; the license to publish review content on a vendor's
+        own channels is a paid package element (see plans/).
+    api_counterpart:
+      operation: trustquotes_get
+      path: GET /trustquotes
+      note: >-
+        The provider explicitly frames the widget and the API as a choose-one decision: the widget
+        handles rendering and star ratings for you, the API gives you multi-product access and your
+        own database but leaves design and rating freshness to you.
+  - name: QuoteFinder
+    kind: browser-extension
+    distribution: Chrome Web Store
+    version: null
+    version_note: >-
+      Named on the TrustRadius pricing page as a package element ("Leverage customer quotes with
+      QuoteFinder Chrome extension"); no listing URL or version is published on the vendor site, so
+      nothing is recorded rather than guessed.
+    audience: sales
+    note: >-
+      Sales-enablement surface for pulling customer quotes into outbound work. Not an API client and
+      not embeddable in a vendor's own site.
+  - name: Embedded lead capture
+    kind: hosted-surface
+    distribution: TrustRadius-hosted product profile
+    version: null
+    note: >-
+      "Embedded lead capture on product profile" with "Integration to CRM" is listed as a package
+      element on the pricing page. It runs on TrustRadius' own property, not on the vendor's, so it
+      is a hosted surface rather than a component a developer installs.
+not_found:
+  - No npm/CDN-distributed element or web-component library.
+  - No public component API reference, prop table, or event contract.
+  - No embedded dashboard or iframe SDK.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

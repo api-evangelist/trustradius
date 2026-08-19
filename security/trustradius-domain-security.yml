@@ -1,11 +1,11 @@
-generated: '2026-07-11'
+generated: '2026-08-14'
 method: probed
 source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
 hosts:
 - host: www.trustradius.com
   https: true
   tls_version: TLSv1.3
-  cert_expires: Aug 23 02:31:08 2026 GMT
+  cert_expires: Oct 21 02:39:22 2026 GMT
   hsts: null
 - host: solutions.trustradius.com
   https: true
@@ -13,12 +13,11 @@ hosts:
   cert_expires: Oct  7 09:19:24 2026 GMT
   hsts: true
   hsts_max_age: 31536000
-- host: apidocs.trustradius.com
+- host: api.trustradius.com
   https: true
   tls_version: TLSv1.3
-  cert_expires: Sep 18 11:33:11 2026 GMT
-  hsts: true
-  hsts_max_age: 31536000
+  cert_expires: Oct 10 05:59:18 2026 GMT
+  hsts: null
 domains:
 - domain: trustradius.com
   dnssec: false

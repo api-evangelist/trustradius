@@ -1,0 +1,119 @@
+generated: '2026-08-14'
+method: probed
+source: Live HTTPS GETs against every host named in apis.yml and in the OpenAPI servers[] block.
+provider: TrustRadius
+providerId: trustradius
+result: none
+description: >-
+  TrustRadius serves no /.well-known/ discovery surface on any of its hosts. Every RFC 8615 path
+  probed on 2026-08-14 returned 404 (or 403 at the API edge). No pointer of type WellKnown,
+  APICatalog or SecurityTxt is emitted for this provider, because none of these documents exists —
+  this file records a measured absence, not a capability.
+hosts:
+  - host: https://api.trustradius.com
+    note: >-
+      The API edge answers 403 {"message":"Forbidden"} to every unauthenticated request, including
+      /.well-known/* and /robots.txt. This is an AWS API Gateway deny, not a document — the surface
+      is closed rather than empty.
+    documents:
+      - path: /.well-known/security.txt
+        status: 403
+      - path: /.well-known/openid-configuration
+        status: 403
+      - path: /.well-known/oauth-authorization-server
+        status: 403
+      - path: /.well-known/oauth-protected-resource
+        status: 403
+      - path: /.well-known/api-catalog
+        status: 403
+      - path: /.well-known/ai-plugin.json
+        status: 403
+      - path: /.well-known/agent-card.json
+        status: 403
+      - path: /.well-known/agent.json
+        status: 403
+      - path: /llms.txt
+        status: 403
+      - path: /robots.txt
+        status: 403
+  - host: https://www.trustradius.com
+    note: >-
+      /.well-known/* returns the site's HTML 404 page. /robots.txt and /llms.txt are answered by a
+      Cloudflare bot challenge (403 "Just a moment...") rather than by the origin.
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /llms.txt
+        status: 403
+      - path: /robots.txt
+        status: 403
+  - host: https://solutions.trustradius.com
+    note: >-
+      WordPress vendor site. /.well-known/security.txt and /llms.txt return a real nginx 404;
+      the other /.well-known/* paths return the themed WordPress 404 page (HTML, status 404).
+      /robots.txt is served (200, Yoast-generated) but carries no API or agent directives.
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /llms.txt
+        status: 404
+      - path: /robots.txt
+        status: 200
+        note: Served but empty of API/agent content — not a discovery document.
+  - host: https://apidocs.trustradius.com
+    note: >-
+      Stoplight-hosted developer portal. Every /.well-known/* path returns the Stoplight SPA shell
+      with an HTTP 404 status — no document at any path. /robots.txt is 200 with `User-agent: *`
+      and no directives.
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /llms.txt
+        status: 404
+      - path: /robots.txt
+        status: 200
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

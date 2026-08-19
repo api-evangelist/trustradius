@@ -1,0 +1,93 @@
+generated: '2026-08-14'
+method: derived
+source: >-
+  openapi/_original/trustradius-api-openapi.yml (provider-published OpenAPI 3.0.0 v1.1) plus one
+  observed live edge response from https://api.trustradius.com/v1 on 2026-08-14.
+provider: TrustRadius
+providerId: trustradius
+format: undeclared
+rfc9457: false
+description: >-
+  TrustRadius publishes no error reference. The provider's OpenAPI declares 400 and 404 on eight of
+  its eleven operations, but each declaration is empty — no description, no content block, no schema
+  — so the wire shape of an error body is not specified anywhere in the contract. The only error
+  payload that can be observed without credentials is the AWS API Gateway deny at the edge. Nothing
+  below is invented: an entry is either derived from a declared response in the spec or from a
+  response actually received.
+envelope:
+  documented: false
+  observed:
+    shape: '{"message":"<string>"}'
+    example_source: 'GET https://api.trustradius.com/v1 (unauthenticated) -> HTTP 403'
+    note: >-
+      This is the AWS API Gateway default deny envelope, not necessarily the application''s error
+      envelope. Do not assume application-level 400/404 bodies use the same key.
+  media_type: application/json
+problem_types:
+  - status: 400
+    title: Bad Request
+    declared_in_spec: true
+    body_schema_declared: false
+    operations:
+      - visitor_insights_report
+      - get_traffic_page_types
+      - get_traffic_products
+      - visitor_insights_report_pages_get
+      - trustquotes_get
+      - tags_get
+      - intent_data
+      - account_details
+    likely_causes:
+      - Malformed or out-of-range date filter (start-date/end-date must be ISO 8601 dates;
+        start_time/stop_time must be ISO 8601 date-times).
+      - '`limit` below 1 or `skip` below 0 — both carry minimums in the spec.'
+      - '`format` set to anything other than `csv` or `json`.'
+      - Unknown field name passed to `fields` or `sort`.
+    remediation: >-
+      Re-check the query parameters against the operation''s declared schema before retrying.
+      Derived from parameter constraints in the spec; TrustRadius does not document 400 causes.
+    provenance: derived-from-spec
+  - status: 404
+    title: Not Found
+    declared_in_spec: true
+    body_schema_declared: false
+    operations:
+      - visitor_insights_report
+      - get_traffic_page_types
+      - get_traffic_products
+      - visitor_insights_report_pages_get
+      - trustquotes_get
+      - tags_get
+      - intent_data
+      - account_details
+    likely_causes:
+      - Unknown `account_id` on GET /accounts/{account_id}.
+      - Product id in `products` that is not published under the caller''s vendor profile —
+        resolve ids with GET /product-ids first.
+    remediation: >-
+      Resolve identifiers through GET /product-ids before calling the report, TrustQuotes or intent
+      endpoints. Derived from the identifier bootstrap documented in the provider FAQ.
+    provenance: derived-from-spec
+  - status: 403
+    title: Forbidden
+    declared_in_spec: false
+    body_schema_declared: false
+    observed_body: '{"message":"Forbidden"}'
+    operations: all
+    likely_causes:
+      - Missing `x-api-key` header.
+      - Invalid or revoked API key.
+      - Requesting a path the vendor account is not subscribed to.
+    remediation: >-
+      Send the key in the lowercase `x-api-key` header. Keys come from Vendor Portal > Integrations
+      or from a TrustRadius Client Success Manager.
+    provenance: observed-live
+not_documented:
+  - A 429 / rate-limit-exceeded response. The FAQ publishes a 10 req/s budget but the spec declares
+    no 429 and the docs name no exhaustion status code.
+  - Any 5xx response, on any operation.
+  - Any machine-readable error code, error type URI, or per-field validation detail.
+  - Any error response header (no Retry-After, no request id).
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

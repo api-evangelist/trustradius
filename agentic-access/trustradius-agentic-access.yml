@@ -1,20 +1,22 @@
-generated: '2026-07-15'
+generated: '2026-08-14'
 method: generated
-source: openapi/trustradius-public-openapi.yml, openapi/trustradius-reviews-openapi.yml
+source: openapi/trustradius-intent-data-api-openapi.yml, openapi/trustradius-legacy-api-openapi.yml,
+  openapi/trustradius-product-data-api-openapi.yml, openapi/trustradius-traffic-data-api-openapi.yml,
+  openapi/trustradius-trustquotes-api-openapi.yml
 description: Recommended x-agentic-access execution contracts, classified heuristically from
   the OpenAPI. A governance starting point for exposing this API to AI agents — review and bind
   audience per deployment. See research/curity/agentic-governance/.
 summary:
-  operations: 9
+  operations: 11
   by_action_class:
-    connected: 9
+    connected: 11
   by_consequence:
-    read: 9
+    read: 11
   human_in_the_loop_required: 0
 operations:
-- path: /products
+- path: /intent
   method: get
-  operationId: listProducts
+  operationId: intent_data
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -22,9 +24,9 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /products/{productSlug}
+- path: /reports/visitor-insights/companies
   method: get
-  operationId: getProduct
+  operationId: visitor_insights_report
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -32,9 +34,9 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /products/{productSlug}/reviews
+- path: /reports/visitor-insights/pages
   method: get
-  operationId: getProductReviews
+  operationId: visitor_insights_report_pages_get
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -42,9 +44,9 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /products/{productSlug}/ratings
+- path: /accounts/{account_id}
   method: get
-  operationId: getProductRatings
+  operationId: account_details
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -52,9 +54,9 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /categories
+- path: /product-ids
   method: get
-  operationId: listCategories
+  operationId: product_ids_get
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -62,9 +64,9 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /categories/{categorySlug}
+- path: /product-scores
   method: get
-  operationId: getCategory
+  operationId: product_scores
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -72,9 +74,9 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /companies/{companySlug}
+- path: /reports/traffic/pages
   method: get
-  operationId: getCompany
+  operationId: get_traffic_page_types
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -82,9 +84,9 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /reviews
+- path: /reports/traffic/products
   method: get
-  operationId: listReviews
+  operationId: get_traffic_products
   x-agentic-access:
     action-class: connected
     consequence: read
@@ -92,9 +94,29 @@ operations:
     token:
       max-ttl: 3600
     audit: none
-- path: /reviews/{reviewId}
+- path: /reports/syndication/tqw/pages
   method: get
-  operationId: getReview
+  operationId: tqw_pages_get
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /trustquotes
+  method: get
+  operationId: trustquotes_get
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /tags
+  method: get
+  operationId: tags_get
   x-agentic-access:
     action-class: connected
     consequence: read

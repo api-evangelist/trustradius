@@ -4,29 +4,61 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: TrustRadius
 providerId: trustradius
 created: '2026-05-04'
-modified: '2026-05-05'
-reconciled: false
+modified: '2026-08-14'
+generated: '2026-08-14'
+method: searched
+source: https://apidocs.trustradius.com/docs/public-api/ZG9jOjMzODE1NA-faq
+reconciled: true
 tags:
   - Reviews
   - B2B Software
   - Rate Limiting
-description: TrustRadius does not publish public API rate-limit documentation. Programmatic access is
-  provided to vendor customers as part of contracted packages, with throttling terms set in the customer
-  agreement.
+description: >-
+  TrustRadius publishes exactly one rate limit, in the FAQ of its developer portal: "You can make 10
+  requests per second (600 requests per minute) to the TrustRadius API." That number is the whole
+  published policy. It is not broken out by endpoint, plan or key, no burst allowance is stated, and
+  the API returns no rate-limit response headers and names no status code for exhaustion — so a
+  client has to enforce the budget on its own clock and infer throttling from failures.
 sources:
-  - https://www.trustradius.com/
-notes: No public rate-limit documentation. API access and limits are negotiated as part of the vendor
-  contract; vendor pricing page returned 403 during reconciliation.
+  - https://apidocs.trustradius.com/docs/public-api/ZG9jOjMzODE1NA-faq
+  - https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api
+limit_count: 1
 limits:
-  - name: Contact Sales
-    scope: contract
-    metric: varies
-    limit: see vendor agreement
-    notes: No public rate limit numbers documented.
+  - name: Global API request rate
+    scope: per-api-key
+    scope_note: >-
+      The docs say "to the TrustRadius API" without qualifying the subject. A single opaque key is
+      issued per vendor account, so per-key and per-account are the same boundary in practice.
+    metric: requests
+    limit: 10
+    window: 1 second
+    equivalent: 600 requests per minute
+    burst: not documented
+    applies_to: all 11 published operations
+    source: https://apidocs.trustradius.com/docs/public-api/ZG9jOjMzODE1NA-faq
+    quote: You can make 10 requests per second (600 requests per minute) to the TrustRadius API.
+response_signaling:
+  headers: []
+  headers_note: >-
+    No RateLimit-*, X-RateLimit-* or Retry-After header is documented, and the provider-published
+    OpenAPI declares no response headers on any operation. There is no runtime signal an agent can
+    read.
+  exhaustion_status: not documented
+  exhaustion_note: >-
+    No 429 response is declared anywhere in the spec. The only error status observed live at the
+    edge is 403 with body {"message":"Forbidden"}, which is the AWS API Gateway deny and is also
+    what a missing or invalid key returns — so a client cannot distinguish throttling from an auth
+    failure from the response alone.
 policies:
-  - name: Contact Sales
-    description: Rate-limit terms (and the API itself) are made available through TrustRadius vendor sales;
-      no public self-serve API tier exists.
+  - name: Client-side budgeting required
+    description: >-
+      Because there is no header signal and no documented exhaustion code, the only safe integration
+      pattern is a client-side token bucket at 10 req/s. Pace bulk pulls (paged intent, traffic and
+      TrustQuotes reports) rather than parallelizing them.
+  - name: Contract terms
+    description: >-
+      API access itself is bundled into paid vendor packages (see plans/). Any limit beyond the
+      published 10 req/s would sit in the customer agreement, not in public documentation.
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

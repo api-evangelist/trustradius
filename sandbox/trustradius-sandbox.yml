@@ -1,0 +1,52 @@
+generated: '2026-08-14'
+method: probed
+source: >-
+  https://stoplight.io/api/v1/projects/cHJqOjc5NzU2/nodes/YXBpOjUxMzgzNjA-trust-radius-api
+  (links.mock_url), verified with a live request on 2026-08-14.
+provider: TrustRadius
+providerId: trustradius
+description: >-
+  TrustRadius publishes no sandbox, no test keys and no test-mode of its own. What does exist is a
+  live Prism mock server that its Stoplight-hosted developer portal provisions automatically from
+  the published OpenAPI. It is publicly reachable and returns schema-shaped example payloads, which
+  makes the API explorable before a vendor contract is signed — but it is a documentation artifact,
+  not a TrustRadius environment, and it returns synthetic values, never real review or intent data.
+provider_sandbox:
+  exists: false
+  test_keys: none
+  test_mode: none
+  time_simulation: none
+  fixtures: none
+  note: >-
+    The provider's own overview says you can "test each endpoint directly from the documentation
+    page by entering your API key" — i.e. the only first-party testing path uses a real production
+    key against production data. There are no test credentials to publish.
+mock_server:
+  provider: Stoplight Prism (auto-provisioned by the docs host)
+  first_party: false
+  endpoint: https://stoplight.io/mocks/trustradius/public-api/5138360
+  auth:
+    required: true
+    scheme: x-api-key header
+    note: >-
+      Prism enforces the spec's security requirement, so a request with no `x-api-key` header
+      returns 401 with a Prism UNAUTHORIZED body. Any non-empty header value satisfies it — the mock
+      does not validate the key against TrustRadius, and no TrustRadius credential is involved.
+  verification:
+    - request: 'GET https://stoplight.io/mocks/trustradius/public-api/5138360/product-ids (no headers)'
+      status: 401
+      body_excerpt: '{"name":"https://stoplight.io/prism/errors#UNAUTHORIZED","status":401,...}'
+    - request: 'GET https://stoplight.io/mocks/trustradius/public-api/5138360/product-ids with x-api-key set'
+      status: 200
+      body_excerpt: '[{"_id":"string","vendor":{"_id":"string","name":"string"},"slug":"string","isVisitorInsightsEnabled":"string"}]'
+  data_realism: >-
+    Static schema-derived placeholders ("string", 0) — the mock is not configured for dynamic
+    example generation. Useful for shape and integration wiring; useless for behaviour or volume.
+  covers: all 11 published operations
+  caveats:
+    - Returns example values, never real TrustRadius data.
+    - Hosted by Stoplight, not by TrustRadius; its availability is not a TrustRadius commitment.
+    - Because the spec declares no error bodies, the mock cannot return realistic 400/404 payloads.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/trustradius/main/json-schema/trustradius-VisitorInsightsCompany.json",
+  "title": "Visitor Insights Company",
+  "type": "object",
+  "properties": {
+    "companyName": {
+      "type": "string"
+    },
+    "companyCategory": {
+      "description": "Standard Industrial Classification name",
+      "nullable": true,
+      "type": "string"
+    },
+    "companySicCode": {
+      "description": "Standard Industrial Classification code",
+      "nullable": true,
+      "type": "string"
+    },
+    "companySize": {
+      "description": "A range of numbers of employees",
+      "nullable": true,
+      "type": "string"
+    },
+    "companyCity": {
+      "nullable": true,
+      "type": "string"
+    },
+    "companyRegion": {
+      "nullable": true,
+      "type": "string"
+    },
+    "companyRegionCode": {
+      "nullable": true,
+      "type": "string"
+    },
+    "companyCountry": {
+      "nullable": true,
+      "type": "string"
+    },
+    "companyCountryCode": {
+      "minLength": 2,
+      "maxLength": 2,
+      "nullable": true,
+      "type": "string"
+    },
+    "companyFacebook": {
+      "nullable": true,
+      "type": "string"
+    },
+    "companyLinkedinId": {
+      "nullable": true,
+      "type": "string"
+    },
+    "companyTwitter": {
+      "nullable": true,
+      "type": "string"
+    },
+    "companyWebsite": {
+      "nullable": true,
+      "type": "string"
+    },
+    "visits": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "The number of visits from this company during the specified date range."
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "product": {
+      "type": "string"
+    },
+    "productId": {
+      "type": "string"
+    },
+    "vendor": {
+      "type": "string"
+    }
+  },
+  "x-generated": "2026-08-14",
+  "x-method": "derived",
+  "x-source": "openapi/_original/trustradius-api-openapi.yml (provider-published OpenAPI 3.0.0 v1.1, exported from the TrustRadius Stoplight project trustradius/public-api)"
+}

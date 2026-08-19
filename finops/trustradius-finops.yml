@@ -4,20 +4,33 @@ schema: https://www.finops.org/framework/
 provider: TrustRadius
 providerId: trustradius
 created: '2026-05-04'
-modified: '2026-05-05'
-reconciled: false
+# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
+# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
+method: searched
+modified: '2026-08-14'
+generated: '2026-08-14'
+source: https://solutions.trustradius.com/pricing/
+reconciled: true
 tags:
   - Reviews
   - B2B Software
   - FinOps
   - FOCUS
-description: TrustRadius vendor packages are sold through direct sales, with no public pricing or metered
-  usage API. FinOps surface is limited to the contracted subscription line — no per-unit meters or FOCUS-aligned
-  usage export is published.
+description: >-
+  TrustRadius sells vendor packages through direct sales but does publish one figure — the Customer
+  Voice Package at $30k per product per year, with a multi-year discount available. The billable
+  unit is therefore the PRODUCT, not the seat and not API usage: a vendor with four listed products
+  carries four subscription lines. Add-ons (category intent data, premium content, enterprise SSO,
+  event support, intent-driven leads) are separately quoted with no published price. There is no
+  metered usage API and no FOCUS-aligned usage export; API access is an entitlement inside the
+  package rather than a billed meter, and the published 10 req/s limit is a throttle, not a charge.
 sources:
-  - https://www.trustradius.com/
-notes: No public pricing or usage telemetry. Trimmed to a Contact Sales shape until vendor-program details
-  are disclosed.
+  - https://solutions.trustradius.com/pricing/
+  - https://apidocs.trustradius.com/docs/public-api/ZG9jOjMzODE1NA-faq
+notes: >-
+  Corrected 2026-08-14. The 2026-05 sweep recorded "no public pricing" against a 403; the vendor
+  pricing page is in fact publicly readable and names the $30k/product/year figure. Usage telemetry
+  is still absent — nothing in the API reports consumption back to the customer.
 alignedWith:
   framework: FinOps Foundation Framework
   frameworkUrl: https://www.finops.org/framework/
@@ -30,6 +43,11 @@ billingModel:
   pricingCategory: Contract
   billingFrequency: Annual
   billingCurrency: USD
+  pricingUnit: per product per year
+  listPrice: 30000
+  listPriceScope: Customer Voice Package
+  discounts:
+    - Multi-year discount available
   chargeCategories:
     - Purchase
 focusColumns:
@@ -40,20 +58,43 @@ focusColumns:
   InvoiceIssuerName: TrustRadius, LLC
   BillingCurrency: USD
 meters:
-  - name: vendor_subscription
-    description: Contracted vendor subscription line; no public meter detail published.
-    unit: month
+  - name: customer_voice_package
+    description: >-
+      Contracted vendor subscription line, billed per listed product per year. List price $30,000
+      USD; multi-year discount available. This is a fixed subscription charge, not a usage meter.
+    unit: product-year
+    listPrice: 30000
     aggregation: sum
+  - name: add_on_packages
+    description: >-
+      Category Intent Data, Premium Content, Enterprise SSO, On-site Review Gen Event Support and
+      Intent-Driven Leads. Named on the pricing page; none is priced publicly.
+    unit: contract
+    listPrice: null
+    aggregation: sum
+  - name: api_requests
+    description: >-
+      Not billed and not metered back to the customer. API access is an entitlement of the package;
+      the published 10 requests/second ceiling is a throttle, and no usage report exists.
+    unit: request
+    billed: false
+    aggregation: none
 principles:
   - name: Visibility
-    description: Visibility is limited to the contracted subscription invoice; TrustRadius does not expose
-      a usage API or FOCUS export for self-service consumption.
+    description: >-
+      Visibility is limited to the contracted subscription invoice. TrustRadius exposes no usage API,
+      no FOCUS export, and no consumption reporting of any kind — a customer cannot see how much of
+      what they bought they are actually using, and the API returns no rate-limit headers to infer it
+      from.
   - name: Allocation
     description: Allocate the vendor subscription to the marketing or product-marketing budget that owns
       the listing and review program.
   - name: Optimization
-    description: Optimization happens at renewal — review the package mix (reviews, syndication, intent
-      data, awards) against attributable pipeline before resigning.
+    description: >-
+      Optimization happens at renewal, and the per-product unit is the lever: review which listed
+      products actually earn their $30k line against attributable pipeline, and whether separately
+      quoted add-ons (intent data, premium content) are being consumed. Multi-year commitment is the
+      published discount path.
   - name: Accountability
     description: A marketing or CMO-organization owner manages the TrustRadius relationship and renewal;
       finance approves the annual contract.

@@ -1,20 +1,34 @@
 {
   "provider": "trustradius",
+  "generated": "2026-08-14",
+  "source": "openapi/_original/trustradius-api-openapi.yml (provider-published OpenAPI 3.0.0 v1.1, exported from https://stoplight.io/api/v1/projects/trustradius/public-api/nodes/reference/api.oas3.yml)",
   "sources": [
-    "trustradius-categories-api-openapi.yml",
-    "trustradius-companies-api-openapi.yml",
-    "trustradius-products-api-openapi.yml",
-    "trustradius-reviews-api-openapi.yml"
+    "_original/trustradius-api-openapi.yml"
   ],
   "outputs": [
-    "trustradius-categories-api-openapi.yml",
-    "trustradius-companies-api-openapi.yml",
-    "trustradius-products-api-openapi.yml",
-    "trustradius-reviews-api-openapi.yml"
+    "trustradius-product-data-api-openapi.yml",
+    "trustradius-intent-data-api-openapi.yml",
+    "trustradius-traffic-data-api-openapi.yml",
+    "trustradius-trustquotes-api-openapi.yml",
+    "trustradius-legacy-api-openapi.yml"
   ],
-  "archived": [],
+  "operations": 11,
+  "archived": [
+    "_scaffold/trustradius-public-openapi.yml",
+    "_scaffold/trustradius-reviews-openapi.yml",
+    "_scaffold/trustradius-categories-api-openapi.yml",
+    "_scaffold/trustradius-companies-api-openapi.yml",
+    "_scaffold/trustradius-products-api-openapi.yml",
+    "_scaffold/trustradius-reviews-api-openapi.yml"
+  ],
   "errors": [],
-  "warnings": [],
-  "notes": [],
+  "warnings": [
+    "Declared tag 'Webhooks' has zero operations attached in the source document; no output file was produced for it.",
+    "Declared tag 'Reports' has zero operations attached in the source document; report operations carry Traffic Data or Legacy instead.",
+    "Eight operations declare 400 and 404 responses with no description and no content schema."
+  ],
+  "notes": [
+    "The six previously-refined documents were fabricated by the 2026-05-04 scaffold sweep and describe endpoints that do not exist. Quarantined to _scaffold/ with a README rather than deleted."
+  ],
   "skipped": []
 }

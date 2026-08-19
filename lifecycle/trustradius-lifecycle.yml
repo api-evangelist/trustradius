@@ -1,0 +1,84 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://apidocs.trustradius.com/ (Stoplight table-of-contents for project trustradius/public-api),
+  https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api,
+  openapi/_original/trustradius-api-openapi.yml, and live probes of status/changelog candidates.
+provider: TrustRadius
+providerId: trustradius
+description: >-
+  TrustRadius publishes a versioned API and an explicitly-named Legacy tag, but no versioning policy,
+  no deprecation policy, no changelog and no status page. The lifecycle posture has to be read out of
+  the contract itself rather than out of a published commitment.
+versioning:
+  style: uri-path
+  current_version: v1
+  spec_info_version: '1.1'
+  policy_published: false
+  note: >-
+    The base URL carries `v1` and the OpenAPI `info.version` is `1.1`, so the document has moved at
+    least once inside a stable path version. No policy states what would constitute a breaking change
+    or how a `v2` would be introduced.
+deprecation:
+  policy_published: false
+  sunset_header: not documented
+  deprecation_header: not documented
+  rfc8594: false
+  deprecated_operations_in_spec: 0
+  note: >-
+    No operation carries `deprecated: true`. However the provider ships a first-class `Legacy` tag
+    covering three operations — `visitor_insights_report` (GET /reports/visitor-insights/companies),
+    `visitor_insights_report_pages_get` (GET /reports/visitor-insights/pages) and `account_details`
+    (GET /accounts/{account_id}). Naming a tag "Legacy" is a deprecation signal the machine cannot
+    act on: the operations are not marked deprecated, carry no Sunset date, and nothing tells a
+    client what replaces them. This is recorded as an observation about the published contract, not
+    as a claim that TrustRadius has deprecated them.
+  legacy_operations:
+    - operationId: visitor_insights_report
+      path: /reports/visitor-insights/companies
+      replacement_documented: false
+    - operationId: visitor_insights_report_pages_get
+      path: /reports/visitor-insights/pages
+      replacement_documented: false
+    - operationId: account_details
+      path: /accounts/{account_id}
+      replacement_documented: false
+status_page:
+  published: false
+  probes:
+    - url: https://status.trustradius.com/
+      status: 000
+      note: DNS does not resolve.
+    - url: https://trustradius.statuspage.io/
+      status: 200
+      note: >-
+        NOT a TrustRadius status page. The hostname resolves but redirects to Atlassian's Statuspage
+        product marketing page (canonical https://www.atlassian.com/software/statuspage). This is
+        the classic soft-200: a 200 that carries no provider status document. No StatusPage pointer
+        is emitted.
+changelog:
+  published: false
+  note: >-
+    The Stoplight table-of-contents for the developer portal contains exactly three top-level nodes —
+    the "TrustRadius API" overview article, an "FAQ" article, and the "API Reference" http_service.
+    There is no changelog, release-notes or versioning node. No ChangeLog pointer is emitted.
+sla:
+  published: false
+  note: >-
+    No public uptime or support-response commitment. API access is bundled into paid vendor packages
+    (see plans/) and any service commitment would sit in the customer agreement.
+support:
+  channels:
+    - name: Product team email
+      value: product@trustradius.com
+      source: https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api
+      note: 'The overview names it twice — for key issuance and for "questions, feedback, or ideas".'
+    - name: Client Success Manager
+      value: assigned per vendor account
+      source: OpenAPI securitySchemes description
+    - name: Help center
+      value: https://trustradius.freshdesk.com/support/solutions
+      note: Freshdesk knowledge base covering the Vendor Portal, including API key retrieval.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

@@ -1,92 +1,166 @@
+# Spectral ruleset for the TrustRadius Public API
+#
+# generated: '2026-08-14'
+# method: derived
+# source: openapi/_original/trustradius-api-openapi.yml (provider-published OpenAPI 3.0.0 v1.1,
+#         exported from the TrustRadius Stoplight project trustradius/public-api)
+#
+# Every rule below encodes a convention that is actually observable in the provider's published
+# contract. The previous version of this file asserted camelCase operationIds, version-prefixed
+# paths, page/perPage pagination and a 1-10 trScore range — none of which are true of the real
+# TrustRadius API. It was written against a scaffold spec; see openapi/_scaffold/README.md.
 extends: spectral:oas
 rules:
-  trustradius-operation-ids-camel-case:
-    description: TrustRadius operation IDs must use camelCase format.
+  trustradius-operation-ids-snake-case:
+    description: >-
+      TrustRadius operationIds use snake_case (product_ids_get, intent_data, tqw_pages_get,
+      visitor_insights_report_pages_get).
     severity: warn
     given: "$.paths.*[get,post,put,patch,delete]"
     then:
       field: operationId
       function: pattern
       functionOptions:
-        match: "^[a-z][a-zA-Z0-9]*$"
+        match: "^[a-z][a-z0-9_]*$"
 
-  trustradius-versioned-paths:
-    description: All TrustRadius API paths must include version (e.g., /v1/).
+  trustradius-version-in-server-not-path:
+    description: >-
+      The API version lives in the server URL (https://api.trustradius.com/v1), never in the path.
+      A path that starts with /v<n>/ is a sign the document has been rewritten incorrectly.
     severity: error
     given: "$.paths"
     then:
       field: "@key"
       function: pattern
       functionOptions:
-        match: "^/v[0-9]/"
+        notMatch: "^/v[0-9]"
+
+  trustradius-server-is-production-base:
+    description: The single declared server must be the production base URL.
+    severity: error
+    given: "$.servers[*]"
+    then:
+      field: url
+      function: pattern
+      functionOptions:
+        match: "^https://api\\.trustradius\\.com/v1$"
 
   trustradius-api-key-security:
-    description: All TrustRadius API operations must require API key authentication.
+    description: >-
+      Every operation must require the x-api-key apiKey scheme. The published spec declares security
+      per-operation and has no root-level security block.
     severity: error
     given: "$.paths.*[get,post,put,patch,delete]"
     then:
       field: security
       function: truthy
 
+  trustradius-api-key-scheme-lowercase:
+    description: >-
+      The API key header is the lowercase `x-api-key`, per the provider's auth documentation. An
+      uppercase X-API-Key scheme is a sign of a fabricated or rewritten spec.
+    severity: error
+    given: "$.components.securitySchemes[*]"
+    then:
+      field: name
+      function: pattern
+      functionOptions:
+        match: "^x-api-key$"
+
+  trustradius-read-only-surface:
+    description: >-
+      The published TrustRadius API is read-only. Any non-GET operation is outside the documented
+      contract and should be challenged before it is trusted.
+    severity: error
+    given: "$.paths[*]"
+    then:
+      field: "@key"
+      function: pattern
+      functionOptions:
+        match: "^(get|parameters|summary|description|servers|\\$ref)$"
+
   trustradius-operations-tagged:
-    description: All TrustRadius operations must have tags.
+    description: >-
+      Every operation carries one of the provider's tags — Product Data, Intent Data, Traffic Data,
+      TrustQuotes, Reports or Legacy.
     severity: warn
     given: "$.paths.*[get,post,put,patch,delete]"
     then:
       field: tags
       function: truthy
 
-  trustradius-slug-path-params:
-    description: TrustRadius path parameters for products, categories, and companies use slug format.
+  trustradius-operation-summary:
+    description: Every operation must carry a human-readable summary.
     severity: warn
-    given: "$.paths"
+    given: "$.paths.*[get,post,put,patch,delete]"
     then:
-      field: "@key"
-      function: pattern
-      functionOptions:
-        match: "^/v[0-9]/[a-z-]+(/(\\{[a-z]+Slug\\}|[a-z-]+))*(/[a-z-]+)?"
-
-  trustradius-trscore-range:
-    description: TrustRadius trScore fields must define minimum 1 and maximum 10 range.
-    severity: warn
-    given: "$.components.schemas.*.properties.trScore"
-    then:
-      function: schema
-      functionOptions:
-        schema:
-          properties:
-            minimum:
-              const: 1
-            maximum:
-              const: 10
+      field: summary
+      function: truthy
 
   trustradius-response-200-json:
-    description: TrustRadius GET operations must include a 200 response with JSON content.
+    description: Every GET must declare a 200 response with an application/json body.
     severity: warn
     given: "$.paths.*[get].responses.200"
     then:
       field: content.application/json
       function: truthy
 
-  trustradius-pagination-params:
-    description: TrustRadius collection endpoints should support page and perPage parameters.
-    severity: info
-    given: "$.paths.*[get]"
-    then:
-      function: schema
-      functionOptions:
-        schema:
-          properties:
-            parameters:
-              type: array
-
-  trustradius-date-time-format:
-    description: Date/time fields in TrustRadius schemas must use date-time format.
+  trustradius-4xx-described:
+    description: >-
+      Declared 4xx responses must carry a description. The provider's own spec declares 400 and 404
+      on eight operations with empty descriptions and no schema — this rule is expected to FAIL
+      against the published document, and that failure is the finding.
     severity: warn
-    given: "$.components.schemas.*.properties[createdAt,updatedAt]"
+    given: "$.paths.*[get,post,put,patch,delete].responses[?(@property.match(/^4/))]"
+    then:
+      field: description
+      function: truthy
+
+  trustradius-pagination-skip-limit:
+    description: >-
+      Collection endpoints page with skip/limit (components.parameters listPaging_skip and
+      listPaging_limit) — not page/perPage, and not a cursor.
+    severity: info
+    given: "$.components.parameters[?(@property.match(/^listPaging/))]"
+    then:
+      field: name
+      function: enumeration
+      functionOptions:
+        values:
+          - skip
+          - limit
+
+  trustradius-format-enum:
+    description: >-
+      The `format` parameter selects the response encoding and must be constrained to csv or json.
+      This API ignores the Accept header, so this parameter is the only content-negotiation surface.
+    severity: warn
+    given: "$.components.parameters.format.schema"
+    then:
+      field: enum
+      function: truthy
+
+  trustradius-date-filter-format:
+    description: >-
+      Report date filters must declare `format: date` (start-date/end-date); the intent filters must
+      declare `format: date-time` (start_time/stop_time). The two families are deliberately different.
+    severity: warn
+    given: "$.components.parameters[?(@property.match(/^filters_/))].schema"
     then:
       field: format
       function: enumeration
       functionOptions:
         values:
+          - date
           - date-time
+
+  trustradius-no-vendor-extension-leakage:
+    description: >-
+      x-amazon-apigateway-integration blocks expose the internal gateway wiring (upstream host
+      template and the x-tr-gateway-secret request parameter name) in a public specification.
+      Informational — flag it so downstream consumers know it is there.
+    severity: info
+    given: "$.paths.*[get,post,put,patch,delete]"
+    then:
+      field: x-amazon-apigateway-integration
+      function: falsy

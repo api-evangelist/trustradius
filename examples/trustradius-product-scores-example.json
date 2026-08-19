@@ -1,0 +1,41 @@
+{
+  "operationId": "product_scores",
+  "summary": "Gets product information such as TrustRadius (TR) Score, Star Score, Review Counts",
+  "request": {
+    "method": "GET",
+    "url": "https://api.trustradius.com/v1/product-scores?products=salesforce-crm",
+    "headers": {
+      "x-api-key": "YOUR_TRUSTRADIUS_API_KEY"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "string",
+          "name": "string",
+          "trScore": {
+            "score": 0,
+            "max": 0
+          },
+          "starScore": {
+            "score": 0,
+            "max": 0
+          },
+          "reviewCount": 0,
+          "ratingCount": 0,
+          "ratingsAndReviewsTotalCount": 0,
+          "url": "string"
+        }
+      ]
+    }
+  },
+  "note": "Response body is shaped from the schema the provider declares for this operation. Field VALUES are placeholders (\"string\", 0) \u2014 TrustRadius publishes no examples in its OpenAPI, and API Evangelist does not invent review, intent or traffic values. Where the provider declares a bare `object` with no properties, the placeholder is an empty object, which is exactly how much the contract says.",
+  "x-generated": "2026-08-14",
+  "x-method": "derived",
+  "x-source": "openapi/_original/trustradius-api-openapi.yml (provider-published OpenAPI 3.0.0 v1.1, exported from the TrustRadius Stoplight project trustradius/public-api)"
+}

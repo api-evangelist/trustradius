@@ -1,0 +1,68 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  Registry searches against npm, PyPI, RubyGems, crates.io and Packagist; the TrustRadius GitHub
+  organization (https://github.com/trustradius, 5 public repos, 4 archived); and the provider's own
+  developer portal at https://apidocs.trustradius.com/ (Stoplight project trustradius/public-api).
+provider: TrustRadius
+providerId: trustradius
+description: >-
+  TrustRadius publishes no first-party client library for its REST API in any public package registry.
+  The provider's own documentation tells integrators to call the API directly over HTTPS with an
+  `x-api-key` header and points at Postman as the suggested testing tool, rather than at an SDK.
+  The only distribution TrustRadius ships to a browser is the TrustQuotes for Web JavaScript snippet,
+  which is generated per-widget inside the Vendor Portal and is captured in `components/` rather than
+  here, because it has no registry entry and no addressable version.
+official_package_count: 0
+packages: []
+third_party:
+  - language: javascript
+    registry: npm
+    name: n8n-nodes-trustradius-reviews
+    url: https://www.npmjs.com/package/n8n-nodes-trustradius-reviews
+    install: npm install n8n-nodes-trustradius-reviews
+    official: false
+    version: 0.1.0
+    published: '2026-06-27'
+    note: >-
+      Third-party n8n community node published by an unaffiliated author (npm author "vitbond", no
+      repository field). It scrapes review pages off www.trustradius.com rather than calling the
+      documented REST API, and bills per review. Recorded for completeness only — it is not a
+      TrustRadius client library and must not be counted as an SDK.
+registries_checked:
+  - registry: npm
+    endpoint: https://registry.npmjs.org/-/v1/search?text=trustradius
+    status: 200
+    first_party_hits: 0
+    note: One third-party scraper node (above); no @trustradius scope exists.
+  - registry: pypi
+    endpoint: https://pypi.org/pypi/trustradius/json
+    status: 404
+    first_party_hits: 0
+    note: '`trustradius`, `trustradius-api` and `pytrustradius` all 404.'
+  - registry: rubygems
+    endpoint: https://rubygems.org/api/v1/search.json?query=trustradius
+    status: 200
+    first_party_hits: 0
+    note: Empty result array.
+  - registry: crates.io
+    endpoint: https://crates.io/api/v1/crates?q=trustradius
+    status: 200
+    first_party_hits: 0
+    note: '`{"crates":[],"meta":{"total":0}}`.'
+  - registry: packagist
+    endpoint: https://packagist.org/search.json?q=trustradius
+    status: 200
+    first_party_hits: 0
+    note: '`{"results":[],"total":0}`.'
+  - registry: github
+    endpoint: https://api.github.com/orgs/trustradius/repos
+    status: 200
+    first_party_hits: 0
+    note: >-
+      5 public repos — heroku-buildpack-mongo (archived), heroku-buildpack-awscli (archived),
+      backbone-deep-model, mongoose-to-joi-translator (archived), roo-code (archived fork).
+      None is an API client; the newest non-fork commit is 2024-08-06.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

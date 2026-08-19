@@ -1,0 +1,167 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api (overview + auth),
+  https://apidocs.trustradius.com/docs/public-api/ZG9jOjMzODE1NA-faq (rate limit + id conventions),
+  and openapi/_original/trustradius-api-openapi.yml (the provider-published OpenAPI 3.0.0, v1.1).
+provider: TrustRadius
+providerId: trustradius
+description: >-
+  Cross-cutting runtime semantics for the TrustRadius Public API. The surface is small and uniformly
+  read-only: eleven GET operations over one versioned base URL, one header API key, and a shared set
+  of query-parameter conventions for paging, sorting, sparse fields, date filtering and output format.
+transport:
+  base_url: https://api.trustradius.com/v1
+  scheme: https-only
+  note: >-
+    "All API access is over HTTPS at https://api.trustradius.com/v1." The version is carried in the
+    path, not in a header. The edge is AWS API Gateway (the spec carries
+    x-amazon-apigateway-integration on every operation) and returns
+    `403 {"message":"Forbidden"}` to any unauthenticated or unrouted request.
+authentication:
+  style: api-key-header
+  header: x-api-key
+  case_sensitive_header_name: true
+  obtained_from: >-
+    Vendor Portal > Integrations > "Get API key", or by asking a TrustRadius Client Success Manager
+    / product@trustradius.com.
+  scopes: none
+  note: >-
+    A single opaque key per vendor account. There is no OAuth surface, no scope model, and no
+    token exchange — see authentication/trustradius-authentication.yml.
+  reference: authentication/trustradius-authentication.yml
+idempotency:
+  supported: false
+  header: null
+  note: >-
+    No idempotency mechanism is published, and none is needed at the current surface: all eleven
+    published operations are GET, so every call is naturally idempotent and there is no write path
+    that could double-apply. No Idempotency pointer is emitted in apis.yml, because the provider
+    does not document an idempotency contract — the safety comes from the verb, not from a policy.
+pagination:
+  style: skip-limit
+  applies_to:
+    - /trustquotes
+    - /tags
+    - /intent
+    - /reports/traffic/pages
+    - /reports/traffic/products
+    - /reports/visitor-insights/companies
+    - /reports/visitor-insights/pages
+  parameters:
+    - name: skip
+      in: query
+      type: integer
+      minimum: 0
+      description: The number of records to skip before returning records.
+    - name: limit
+      in: query
+      type: integer
+      minimum: 1
+      description: The maximum number of records to return.
+  response_envelope: none
+  note: >-
+    Offset paging with no cursor, no total-count field and no Link header. Responses are bare JSON
+    arrays or bare objects, so a client must page until a short page comes back — there is no
+    server-provided signal that it has reached the end. Combining `skip`/`limit` with `sort` is the
+    only way to get a stable page order.
+sorting:
+  parameter: sort
+  style: comma-separated-fields
+  descending_prefix: '-'
+  note: >-
+    "Field names can be preceded by a hyphen to indicate that they should be sorted in descending
+    order of values."
+sparse_fields:
+  supported: true
+  parameter: fields
+  style: comma-separated-field-names
+  note: The names of fields to include in the returned data, as a comma-separated list.
+content_negotiation:
+  style: query-parameter
+  parameter: format
+  values:
+    - json
+    - csv
+  default: json
+  note: >-
+    Format is selected with a `?format=` query parameter rather than an Accept header. This is the
+    single most agent-hostile convention on the surface: standard HTTP content negotiation is
+    ignored, so a client that sends `Accept: text/csv` still gets JSON.
+filtering:
+  date_filters:
+    - name: start-date
+      applies_to: time-series report endpoints
+      format: ISO 8601 date
+    - name: end-date
+      applies_to: time-series report endpoints
+      format: ISO 8601 date
+    - name: start_time
+      applies_to: /intent
+      format: ISO 8601 date-time
+    - name: stop_time
+      applies_to: /intent
+      format: ISO 8601 date-time
+  note: >-
+    Naming is inconsistent between the two families — the report endpoints use hyphenated
+    `start-date`/`end-date`, while `/intent` uses underscored `start_time`/`stop_time`. A client
+    cannot generalize one to the other.
+  entity_filters:
+    - name: products
+      style: comma-separated ids
+      note: 'Multiple ids are provided as a comma-separated list (e.g. products=id1,id2,id3).'
+    - name: accounts
+      style: comma-separated account domains
+    - name: intent
+      style: comma-separated activity names
+identifiers:
+  product_id:
+    resolved_by: GET /product-ids?products=<product-slug>
+    note: >-
+      Product ids are not guessable. The documented bootstrap is to pass a product's TrustRadius
+      slug (the string in a www.trustradius.com product URL) to /product-ids and read the `_id`
+      back. Calling /product-ids with no parameters returns every published product under the
+      caller's own vendor profile. This is the entry point for every other operation.
+  vendor_id:
+    resolved_by: GET /product-ids
+    note: Returned as `vendor._id` on each product record.
+  account_id:
+    used_by: GET /accounts/{account_id}
+request_tracing:
+  request_id_header: null
+  note: >-
+    No request-id or correlation header is documented, and none is declared in the spec. There is
+    no published way for a caller to quote a failing request back to support.
+versioning:
+  style: uri-path
+  current: v1
+  spec_version: '1.1'
+  reference: lifecycle/trustradius-lifecycle.yml
+error_envelope:
+  documented: false
+  observed_edge_shape: '{"message":"Forbidden"}'
+  spec_shape: >-
+    The published OpenAPI declares 400 and 404 on eight operations with an empty description and no
+    response body schema, so the error payload is undeclared.
+  rfc9457: false
+  reference: errors/trustradius-problem-types.yml
+rate_limit_signaling:
+  documented_limit: 10 requests per second (600 requests per minute)
+  response_headers: none documented
+  exhaustion_status: not documented
+  note: >-
+    The FAQ states the number but the API publishes no RateLimit-*/X-RateLimit-* headers and does
+    not say what status code it returns on exhaustion, so a client has to implement the budget
+    client-side and infer throttling from failures.
+  reference: rate-limits/trustradius-rate-limits.yml
+gaps:
+  - The declared `Webhooks` tag in the OpenAPI has zero operations attached — there is no callback,
+    webhook or event surface in the published contract despite the tag advertising one.
+  - 4xx responses are declared without descriptions or schemas.
+  - No response headers of any kind are declared anywhere in the spec.
+  - >-
+    No `security` block at the document root; each operation repeats the `x-api-key` requirement
+    individually, so a generator reading only the root sees an unauthenticated API.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/trustradius/main/json-schema/trustradius-ProductScores.json",
+  "title": "TrustRadius ProductScores",
+  "type": "object",
+  "properties": {
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "trScore": {
+            "type": "object",
+            "properties": {
+              "score": {
+                "type": "number"
+              },
+              "max": {
+                "type": "integer"
+              }
+            }
+          },
+          "starScore": {
+            "type": "object",
+            "properties": {
+              "score": {
+                "type": "number"
+              },
+              "max": {
+                "type": "integer"
+              }
+            }
+          },
+          "reviewCount": {
+            "type": "integer"
+          },
+          "ratingCount": {
+            "type": "integer"
+          },
+          "ratingsAndReviewsTotalCount": {
+            "type": "integer"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "x-generated": "2026-08-14",
+  "x-method": "derived",
+  "x-source": "openapi/_original/trustradius-api-openapi.yml (provider-published OpenAPI 3.0.0 v1.1, exported from the TrustRadius Stoplight project trustradius/public-api)"
+}

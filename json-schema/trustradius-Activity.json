@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/trustradius/main/json-schema/trustradius-Activity.json",
+  "title": "Activity",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "click",
+        "download",
+        "like",
+        "view"
+      ]
+    },
+    "label": {
+      "type": "string"
+    },
+    "human_readable": {
+      "type": "string"
+    },
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "web_url": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "x-generated": "2026-08-14",
+  "x-method": "derived",
+  "x-source": "openapi/_original/trustradius-api-openapi.yml (provider-published OpenAPI 3.0.0 v1.1, exported from the TrustRadius Stoplight project trustradius/public-api)"
+}

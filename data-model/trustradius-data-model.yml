@@ -1,0 +1,223 @@
+generated: '2026-08-14'
+method: derived
+source: >-
+  openapi/_original/trustradius-api-openapi.yml — the 17 schemas in components.schemas, their allOf
+  compositions and $ref links, plus the identifier bootstrap documented at
+  https://apidocs.trustradius.com/docs/public-api/ZG9jOjMzODE1NA-faq.
+provider: TrustRadius
+providerId: trustradius
+description: >-
+  Entity-relationship graph for the TrustRadius Public API, derived from the 17 schemas in the
+  provider-published OpenAPI. Two roots — a Vendor (the paying software company) and a Product under
+  that vendor — and three fan-outs off the Product: traffic/visitor-insights reporting, the intent
+  activity stream, and licensed review quotes. The report entities are flat denormalized rows that
+  repeat vendor/product identity inline; the account and quote entities are properly composed with
+  allOf and $ref.
+identifier_bootstrap:
+  entry_operation: product_ids_get
+  path: GET /product-ids
+  note: >-
+    Nothing else is callable without resolving ids here. Pass a product's TrustRadius slug in
+    `products` to get its `_id` and the owning `vendor._id`; call with no parameters as a vendor to
+    enumerate every published product on your own profile.
+entities:
+  - name: Vendor
+    id_field: vendor._id (on /product-ids) / vendor.id (embedded elsewhere)
+    embedded_in: [TrustQuotes.vendor, Tags.vendor]
+    denormalized_as: vendor (string) on TrafficProduct, TrafficPage, VisitorInsightsCompany, VisitorInsightsPages
+    note: The paying software company. Every report row carries its vendor name inline as a string.
+  - name: Product
+    id_field: _id (from /product-ids) / productId (in reports) / id (embedded)
+    slug_field: slug
+    surfaced_by: [product_ids_get, product_scores]
+    flags: [isVisitorInsightsEnabled]
+    note: >-
+      The pivot of the model. `slug` is the human key visible in www.trustradius.com URLs; `_id` is
+      the machine key every other endpoint consumes. `isVisitorInsightsEnabled` tells a client in
+      advance whether the Legacy visitor-insights endpoints will return anything for this product.
+  - name: ProductScores
+    schema: '#/components/schemas/ProductScores'
+    surfaced_by: product_scores
+    shape: '{products: [ {id, name, trScore{score,max}, starScore{score,max}, reviewCount, ratingCount, ratingsAndReviewsTotalCount, url} ]}'
+    note: >-
+      The two scores are nested objects carrying their own maximum, so a client reads `trScore.score`
+      against `trScore.max` rather than assuming a 1-10 or 1-5 range. `ratingsAndReviewsTotalCount`
+      is distinct from `reviewCount` and `ratingCount` — ratings and full reviews are counted
+      separately.
+  - name: TrafficProduct
+    surfaced_by: get_traffic_products
+    grain: one row per product per date
+    measures: [totalPageViews, totalVisits, totalVisitors, totalCategoryPageViews, totalCategoryVisits, totalCategoryVisitors]
+    note: Carries category-level denominators alongside product measures, so share-of-category is computable client-side.
+  - name: TrafficPage
+    surfaced_by: get_traffic_page_types
+    grain: one row per page (pageType/url) per product per date
+    measures: [totalPageViews, totalVisitors]
+  - name: VisitorInsightsCompany
+    surfaced_by: visitor_insights_report
+    tag: Legacy
+    grain: one row per identified company per product per date
+    firmographics: [companyName, companyCategory, companySicCode, companySize, companyCity, companyRegion, companyRegionCode, companyCountry, companyCountryCode, companyWebsite, companyLinkedinId, companyTwitter, companyFacebook]
+    measures: [visits]
+  - name: VisitorInsightsPages
+    surfaced_by: visitor_insights_report_pages_get
+    tag: Legacy
+    grain: VisitorInsightsCompany plus page detail (pageType, pageTitle, url)
+    measures: [visits, visitors]
+  - name: Account
+    schema: '#/components/schemas/Account'
+    id_field: id
+    fields: [url, company]
+    company_fields: [name, domain, industry, sicCode, companySize, city, state, stateCode, country, countryCode, postalCode, and social/web handles]
+    note: >-
+      An identified visiting company. Most `company` fields are explicitly `nullable: true` —
+      firmographic enrichment is best-effort, and a client must handle nulls on every field except
+      the name. `countryCode` is constrained to exactly 2 characters.
+  - name: AccountDetail
+    schema: '#/components/schemas/AccountDetail'
+    composition: 'allOf: [Account, {visitors: [Visitor]}]'
+    surfaced_by: account_details
+    note: Account plus its resolved visitors. A real composition, not a placeholder.
+  - name: AccountActivity
+    schema: '#/components/schemas/AccountActivity'
+    id_field: id
+    fields: [name, domain, activities]
+    note: An account together with its intent activity stream.
+  - name: Activity
+    schema: '#/components/schemas/Activity'
+    id_field: id
+    fields: [date, type, label, human_readable, objects]
+    enum:
+      type: [click, download, like, view]
+    note: >-
+      One intent event. `type` is a closed four-value enum — this is the only enumerated domain in
+      the entire API besides the `format` parameter, and it is what an agent should branch on.
+      `human_readable` is the display string. `objects` is an array of {type, id, name, web_url}
+      pointing at whatever the activity happened to.
+  - name: Visitor
+    schema: '#/components/schemas/Visitor'
+    id_field: id
+    foreign_key: account_id
+    fields: [url]
+  - name: VisitorDetail
+    schema: '#/components/schemas/VisitorDetail'
+    composition: 'allOf: [Visitor, {visits: [VisitDetail]}]'
+  - name: Visit
+    schema: '#/components/schemas/Visit'
+    id_field: id
+    fields: [date (date-time)]
+  - name: VisitDetail
+    schema: '#/components/schemas/VisitDetail'
+    composition: 'allOf: [Visit, {activity_count, visitor{id, account_id}}]'
+  - name: IntentRegistration
+    schema: '#/components/schemas/IntentRegistration'
+    surfaced_by: intent_data
+    fields: [partner, customerId, customerName, customerDomain, intentTarget]
+    note: The registration record that scopes an intent-data pull to a partner and customer.
+  - name: TrustQuotes
+    schema: '#/components/schemas/TrustQuotes'
+    id_field: id
+    surfaced_by: trustquotes_get
+    fields: [text, created, isSummary, isAnonymous, taggedreviewStatus, allTags, allTagNames]
+    embedded:
+      vendor: '{id, name}'
+      product: '{id, name}'
+      review: '{id, editedDate, publishedDate, heading, url, rating}'
+      user: '{id, pictureUrl, name, company{name, size, industry{name}}, position{title, jobType, department}}'
+    note: >-
+      The richest entity in the API and fully specified. `review.url` links back to the published
+      review on TrustRadius and `review.rating` carries its numeric score. `user` carries reviewer
+      identity and firmographics — which is exactly why `isAnonymous` must be honored before
+      rendering any of it.
+  - name: Tags
+    schema: '#/components/schemas/Tags'
+    id_field: id
+    fields: [name, sequence]
+    embedded:
+      vendor: '{id, name}'
+      products: '{ids: [string], names: [string]}'
+      tagGroup: '{id, name, type, sequence, scope}'
+    note: >-
+      The tag vocabulary for TrustQuotes. `sequence` on both the tag and its group is the vendor's
+      display order; `tagGroup.scope` distinguishes vendor-scoped from global tags.
+  - name: NameValuePair
+    fields: [name, value]
+    note: Generic helper schema; not referenced by any operation response in the published document.
+relationships:
+  - from: Vendor
+    to: Product
+    type: has_many
+    via: vendor._id on the /product-ids record
+  - from: Product
+    to: ProductScores
+    type: has_one
+    via: "products[].id"
+  - from: Product
+    to: TrafficProduct
+    type: has_many
+    via: productId
+  - from: Product
+    to: TrafficPage
+    type: has_many
+    via: productId
+  - from: Product
+    to: VisitorInsightsCompany
+    type: has_many
+    via: productId
+  - from: Product
+    to: VisitorInsightsPages
+    type: has_many
+    via: productId
+  - from: Vendor
+    to: TrustQuotes
+    type: has_many
+    via: TrustQuotes.vendor.id
+  - from: Product
+    to: TrustQuotes
+    type: has_many
+    via: TrustQuotes.product.id
+  - from: TrustQuotes
+    to: Tags
+    type: has_many
+    via: allTags (ids) / allTagNames (names)
+  - from: Vendor
+    to: Tags
+    type: has_many
+    via: Tags.vendor.id
+  - from: Tags
+    to: Product
+    type: has_many
+    via: Tags.products.ids
+  - from: AccountDetail
+    to: Visitor
+    type: has_many
+    via: "'allOf $ref #/components/schemas/Visitor'"
+  - from: Visitor
+    to: Account
+    type: belongs_to
+    via: Visitor.account_id
+  - from: VisitorDetail
+    to: VisitDetail
+    type: has_many
+    via: "'allOf $ref #/components/schemas/VisitDetail'"
+  - from: VisitDetail
+    to: Visit
+    type: is_a
+    via: "'allOf $ref #/components/schemas/Visit'"
+  - from: AccountActivity
+    to: Activity
+    type: has_many
+    via: "'$ref #/components/schemas/Activity'"
+observations:
+  - The account/visitor/visit family is properly modelled with allOf composition and $ref
+    (AccountDetail -> Account + Visitor, VisitorDetail -> Visitor + VisitDetail, VisitDetail ->
+    Visit). The report family is the opposite — flat denormalized rows that repeat vendor and
+    product identity as untyped strings, with no link back to the entities that own them.
+  - Only one field in the whole document is named as a foreign key — Visitor.account_id. Everywhere
+    else a relationship is carried by naming convention (productId, vendor), so a generator cannot
+    infer the graph from the spec alone.
+  - Activity.type is the only enumerated business domain in the API: click | download | like | view.
+  - Nearly every Account.company field is nullable; firmographic enrichment is best-effort.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

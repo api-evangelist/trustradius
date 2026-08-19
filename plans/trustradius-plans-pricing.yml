@@ -4,41 +4,119 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: TrustRadius
 providerId: trustradius
 created: '2026-05-04'
-modified: '2026-05-05'
-reconciled: false
+modified: '2026-08-14'
+generated: '2026-08-14'
+method: searched
+source: https://solutions.trustradius.com/pricing/
+reconciled: true
 tags:
   - Reviews
   - B2B Software
   - Marketing
-description: TrustRadius is a B2B software review platform that sells vendor subscriptions through direct
-  sales rather than a self-serve pricing page. Buyer-side review reading is free; vendor-side packages
-  (TrustQuotes, downstream syndication, lead programs, awards) are quoted per engagement. No public price
-  list is available to reconcile.
+  - Intent Data
+description: >-
+  TrustRadius publishes one packaged price and a list of named add-ons on its vendor pricing page.
+  The core Customer Voice Package is listed at $30k per product per year with a multi-year discount
+  available; everything else — category intent data, premium content, enterprise SSO, event support,
+  intent-driven leads — is an "Additional Option" with no published price. Buyer-side review reading
+  is free. API access is not sold on its own and has no self-serve or free developer tier: a key is
+  issued to vendors from the Vendor Portal as part of a package, and which endpoints answer depends
+  on which package elements the account holds.
 sources:
-  - https://www.trustradius.com/
-notes: Vendor pricing is gated behind sales (the public vendor pricing endpoint returned 403). API access
-  is provided to vendors as part of contracted packages; no public developer plan exists. Trimmed to a
-  single Contact Sales engagement.
+  - https://solutions.trustradius.com/pricing/
+  - https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api
+  - https://trustradius.freshdesk.com/support/solutions/articles/43000639047
+notes: >-
+  The pricing page is the provider's own and is publicly readable (HTTP 200, 2026-08-14). It names a
+  single figure — "$30k/product/year" against the Customer Voice Package, with "Multi-year discount
+  available" — and prices none of the add-ons. This artifact previously said no public price list
+  existed; that was written against a 403 during the 2026-05 sweep and is now corrected.
+  Note also that TrustRadius is now part of HG Insights, announced on its own vendor site.
+plan_count: 2
 plans:
-  - id: trustradius-contact-sales
-    name: Contact Sales
-    type: enterprise
-    description: Custom-quoted vendor packages covering review collection, syndication, intent data, and
-      API access. Pricing is not publicly disclosed.
+  - id: trustradius-buyer
+    name: Buyer Access
+    type: free
+    audience: software buyers
+    description: >-
+      Reading verified reviews, ratings, TrustRadius scores and category comparisons on
+      www.trustradius.com. No API access.
+    price: 0
+    currency: USD
+    api_access: false
+  - id: trustradius-customer-voice-package
+    name: Customer Voice Package
+    type: subscription
+    audience: software vendors
+    description: >-
+      The packaged vendor subscription. Covers review sourcing and campaigns, embedded lead capture
+      on the product profile with CRM integration, a license to publish review content on the
+      vendor's own channels, the QuoteFinder Chrome extension, competitive performance data and
+      reporting, and implementation support with a dedicated Customer Success Manager plus an SEO
+      strategy session.
+    price: 30000
+    price_display: $30k/product/year
+    currency: USD
+    billing_period: year
+    unit: per product
+    discount: Multi-year discount available
+    api_access: true
+    api_access_note: >-
+      An API key is issued from Vendor Portal > Integrations. Which endpoints return data depends on
+      the package elements held — content licensing gates /trustquotes and /tags, visitor insights
+      gates the Legacy report endpoints, and category intent data is a separate add-on that gates
+      /intent.
     entries:
-      - label: Vendor Subscription
-        name: vendor_subscription
+      - label: Customer Voice Package
+        name: customer_voice_package
         type: subscription
-        metric: month
+        metric: product
         limit: 1
-        timeFrame: month
+        timeFrame: year
         geo: global
         unit: 1
-        price: contact sales
+        price: 30000
+        currency: USD
         userMultiplied: false
     elements:
-      - name: Direct Sales Engagement
-      - name: Custom Vendor Package
+      - name: Review sourcing and custom questionnaire setup
+      - name: Embedded review and email campaign strategy plan
+      - name: Review campaigns
+      - name: Embedded lead capture on product profile
+      - name: Integration to CRM
+      - name: License to publish review content on your channels
+      - name: Embed review content on your website to improve SEO
+      - name: Identify references from reviews
+      - name: QuoteFinder Chrome extension
+      - name: Competitive performance data and reporting
+      - name: Implementation support
+      - name: Dedicated Customer Success Manager
+      - name: SEO analysis and strategy session
+add_ons:
+  - name: Category Intent Data
+    price: not published
+    description: >-
+      Engage buyers researching your product, your competitors' products and your technology
+      category; identify deals you were missing; activate within your CRM or ABM platform. This is
+      the entitlement behind GET /intent.
+  - name: Premium Content
+    price: not published
+    description: Competitive intelligence, customer stories from review content, ready-to-share quote assets.
+  - name: Enterprise SSO
+    price: not published
+    description: Frictionless login for employees; onboarding and offboarding.
+  - name: On-site Review Gen Event Support
+    price: not published
+    description: Written and video review generation at hybrid, virtual or in-person events.
+  - name: Intent-Driven Leads
+    price: not published
+    description: >-
+      Leads generated either directly from the product profile lead form, or off-platform using
+      downstream intent data and premium content to target an in-market audience.
+purchase_path:
+  self_serve: false
+  route: Request a demo / Book a demo -> sales
+  url: https://solutions.trustradius.com/contact/
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

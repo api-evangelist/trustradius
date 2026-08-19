@@ -4,16 +4,29 @@ vocabulary:
     Domain vocabulary and terminology for TrustRadius APIs and the B2B buyer
     intelligence platform, covering reviews, scores, categories, intent data, and
     buyer research concepts.
-  version: "1.0.0"
+  version: "1.1.0"
   created: "2026-05-03"
-  modified: "2026-05-03"
+  modified: "2026-08-14"
+  generated: "2026-08-14"
+  method: derived
+  source: >-
+    openapi/_original/trustradius-api-openapi.yml (provider-published OpenAPI 3.0.0 v1.1),
+    https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api,
+    https://apidocs.trustradius.com/docs/public-api/ZG9jOjMzODE1NA-faq,
+    https://solutions.trustradius.com/pricing/
+  note: >-
+    Revised 2026-08-14 against the real provider-published contract. Four terms had been written
+    against a scaffold specification and asserted field names, ranges and header casing the
+    TrustRadius API does not use; they are corrected below and API-surface terms have been added.
 
 terms:
   - term: TrustRadius Score (trScore)
     definition: >-
-      A weighted score from 1 to 10 calculated by TrustRadius for each software product,
-      based on the quantity and recency of verified reviews. More recent reviews are
-      weighted more heavily. Used as the primary quality signal for B2B software products.
+      TrustRadius's weighted product quality score, returned by GET /product-scores as an object
+      `trScore: {score, max}` rather than a bare number. Read `score` relative to the `max` the API
+      returns with it — the contract does not fix the range, so do not hard-code one. It sits
+      alongside a separate `starScore: {score, max}`.
+    surfaced_by: product_scores
     tags:
       - Ratings
       - B2B Software Reviews
@@ -29,17 +42,20 @@ terms:
 
   - term: Product Slug
     definition: >-
-      A URL-safe identifier for a software product on TrustRadius, derived from the
-      product name (e.g., "salesforce-crm", "hubspot-crm"). Used as the primary
-      identifier in TrustRadius API endpoints.
+      A URL-safe identifier for a software product on TrustRadius, visible in www.trustradius.com
+      product URLs. It is the HUMAN key, not the API key: no TrustRadius endpoint accepts a slug
+      except GET /product-ids, whose whole job is to exchange a slug for the opaque `_id` that every
+      other endpoint requires.
+    surfaced_by: product_ids_get
     tags:
       - Products
 
   - term: Category Slug
     definition: >-
-      A URL-safe identifier for a software category on TrustRadius (e.g., "crm",
-      "marketing-automation", "project-management"). Used to filter products and reviews
-      by software type.
+      A URL-safe identifier for a software category on the TrustRadius website. It is a website
+      concept only — the published API exposes no category endpoint and accepts no category
+      parameter. Category context reaches the API solely as the aggregate denominators
+      (totalCategoryPageViews / totalCategoryVisits / totalCategoryVisitors) on traffic report rows.
     tags:
       - Categories
 
@@ -98,9 +114,11 @@ terms:
 
   - term: API Key
     definition: >-
-      Authentication credential for the TrustRadius REST API, obtained from the
-      TrustRadius Vendor Portal under Integrations > Get API Key. Passed as the
-      X-API-Key HTTP header in all API requests.
+      The single opaque authentication credential for the TrustRadius REST API, obtained from the
+      Vendor Portal under Integrations > "Get API key", or from a TrustRadius Client Success Manager.
+      Passed in the LOWERCASE `x-api-key` HTTP header on every request. There are no scopes, no
+      OAuth, and no token exchange; entitlement to individual endpoints follows the vendor package,
+      not the key.
     tags:
       - Authentication
 
@@ -112,3 +130,68 @@ terms:
     tags:
       - Intent Data
       - Lead Generation
+
+  - term: TrustQuote
+    definition: >-
+      A licensed excerpt from a published TrustRadius review, returned by GET /trustquotes. Carries
+      the quote `text`, a link back to the source review (`review.url`) and its rating, the reviewer
+      and their firmographics (`user`), an `isAnonymous` flag that must be honored before rendering
+      any reviewer identity, and the tag ids/names used to place it.
+    surfaced_by: trustquotes_get
+    tags:
+      - Content Licensing
+      - Reviews
+
+  - term: TrustQuotes for Web (TQW)
+    definition: >-
+      The self-serve embeddable widget a vendor builds in the Vendor Portal and installs as a
+      JavaScript snippet. It renders review quotes with automatic styling and star ratings, one
+      product per widget. The provider frames TQW and the TrustQuotes API as a choose-one decision:
+      the widget when you want rendering handled, the API when you need multiple products or your
+      own storage and design. GET /reports/syndication/tqw/pages reports widget performance.
+    tags:
+      - Content Licensing
+      - Marketing
+
+  - term: Tag Group
+    definition: >-
+      The container a TrustQuotes tag belongs to, carrying `id`, `name`, `type`, `sequence` and
+      `scope`. `sequence` is the vendor's display order and `scope` distinguishes vendor-scoped tags
+      from global ones. Retrieved with GET /tags.
+    surfaced_by: tags_get
+    tags:
+      - Content Licensing
+
+  - term: Visitor Insights
+    definition: >-
+      Identified-company reporting on who is viewing a vendor's TrustRadius profile — firmographics
+      (name, SIC code, size, location, web and social handles) with visit counts, available at
+      company level and page level. Enabled per product; GET /product-ids returns
+      `isVisitorInsightsEnabled` so a client can check before calling. TrustRadius tags these
+      operations "Legacy" in its own specification without marking them deprecated or naming a
+      replacement.
+    surfaced_by: [visitor_insights_report, visitor_insights_report_pages_get, account_details]
+    tags:
+      - Buyer Intelligence
+      - Intent Data
+
+  - term: Intent Activity Type
+    definition: >-
+      The closed set of buyer behaviours the intent stream reports — `click`, `download`, `like`,
+      `view`. This is the only enumerated business domain in the published API, and it is what an
+      agent or routing rule should branch on. Each activity also carries a `human_readable` display
+      string and the `objects` it happened to.
+    surfaced_by: intent_data
+    tags:
+      - Intent Data
+
+  - term: Customer Voice Package
+    definition: >-
+      The packaged TrustRadius vendor subscription, listed at $30k per product per year with a
+      multi-year discount available. Covers review sourcing and campaigns, embedded lead capture
+      with CRM integration, the content license, QuoteFinder, competitive reporting and a dedicated
+      CSM. API access is issued as part of it; category intent data, premium content, enterprise SSO
+      and event support are separately-quoted add-ons.
+    tags:
+      - Pricing
+      - Buyer Intelligence

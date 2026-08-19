@@ -1,0 +1,99 @@
+generated: '2026-08-14'
+method: derived
+source: >-
+  openapi/_original/trustradius-api-openapi.yml, conventions/trustradius-conventions.yml,
+  errors/trustradius-problem-types.yml, security/trustradius-domain-security.yml, and live probes
+  of the provider's public surface on 2026-08-14.
+provider: TrustRadius
+providerId: trustradius
+description: >-
+  Cross-cutting standards conformance for the TrustRadius Public API, asserted only where evidence
+  exists in the published contract or in a probe. No compliance certification is asserted: the
+  provider's own security page (https://www.trustradius.com/security) is served behind a Cloudflare
+  bot challenge that returned 403 to every request, and API Evangelist does not record certification
+  claims sourced from third-party aggregators. No Compliance pointer is emitted.
+standards:
+  - id: openapi-3.0
+    conforms: true
+    evidence: >-
+      Provider-published OpenAPI 3.0.0 document exported from the TrustRadius Stoplight project
+      (trustradius/public-api, node api:5138360). Parses; 11 operations, all with operationId,
+      summary, tags and a declared 200.
+  - id: oauth2
+    conforms: false
+    evidence: >-
+      No oauth2 securityScheme in the spec; /.well-known/oauth-authorization-server returns 403 at
+      the API edge and 404 everywhere else. Authentication is a single opaque header API key.
+  - id: oidc
+    conforms: false
+    evidence: /.well-known/openid-configuration returns 404 on every provider host (403 at the API edge).
+  - id: rfc9457
+    conforms: false
+    evidence: >-
+      No application/problem+json media type anywhere in the spec. The eight declared 4xx responses
+      have no content block at all; the only observed error body is `{"message":"Forbidden"}`.
+  - id: rfc9116
+    conforms: false
+    evidence: /.well-known/security.txt returns 404 on www.trustradius.com, solutions.trustradius.com
+      and apidocs.trustradius.com, and 403 on api.trustradius.com.
+  - id: rfc8594
+    conforms: false
+    evidence: >-
+      No Sunset or Deprecation header is documented and no operation is marked deprecated, despite a
+      three-operation `Legacy` tag. See lifecycle/trustradius-lifecycle.yml.
+  - id: rfc6749-scopes
+    conforms: false
+    evidence: No scope model exists; the API key is unscoped and per-vendor-account.
+  - id: pagination
+    conforms: partial
+    evidence: >-
+      Offset paging via `skip`/`limit` is declared as reusable components.parameters and applied to
+      seven operations, but there is no total count, no cursor, no Link header and no envelope, so a
+      client cannot detect the last page from the response.
+  - id: idempotency
+    conforms: not-applicable
+    evidence: >-
+      All eleven published operations are GET, which is idempotent by method. No write surface and
+      therefore no idempotency-key contract. Not a failure — a design consequence.
+  - id: content-negotiation
+    conforms: false
+    evidence: >-
+      Output format is selected by a `?format=json|csv` query parameter rather than by the Accept
+      header, so standard HTTP content negotiation does not work against this API.
+  - id: rate-limit-headers
+    conforms: false
+    evidence: >-
+      A 10 req/s budget is published in the FAQ, but no RateLimit-* / X-RateLimit-* response headers
+      are declared or documented and no exhaustion status code is named.
+  - id: https-only
+    conforms: true
+    evidence: >-
+      Single server entry https://api.trustradius.com/v1; TLS 1.3 observed at the edge
+      (cert expires 2026-10-10). Docs state "All API access is over HTTPS".
+  - id: spf
+    conforms: true
+    evidence: SPF record present on trustradius.com (probe 2026-08-14).
+  - id: dmarc
+    conforms: partial
+    evidence: DMARC present with policy `quarantine` (not `reject`) on trustradius.com.
+  - id: dnssec
+    conforms: false
+    evidence: No DNSSEC on trustradius.com.
+  - id: caa
+    conforms: false
+    evidence: No CAA records on trustradius.com.
+compliance_certifications:
+  published_by_provider: unverified
+  note: >-
+    TrustRadius links a "Security" page from its site footer. Every attempt to read
+    https://www.trustradius.com/security on 2026-08-14 — plain curl, a full browser-header request,
+    and WebFetch — returned HTTP 403 from Cloudflare's interstitial ("Just a moment..."). The page
+    may well name certifications; API Evangelist could not read it and will not assert what it could
+    not fetch. Third-party security-profile aggregators do list SOC 2 / ISO 27001 for TrustRadius,
+    but an aggregator is not the provider and is not accepted as evidence here.
+  evidence:
+    - url: https://www.trustradius.com/security
+      status: 403
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
