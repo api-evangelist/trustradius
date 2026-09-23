@@ -1,12 +1,8 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
   version: '1.1'
-  title: TrustRadius API — Legacy
-  description: TrustRadius API operations for Legacy.
-  contact:
-    name: TrustRadius Product
-    email: product@trustradius.com
-    url: https://apidocs.trustradius.com/
+  title: TrustRadius Legacy API
+  description: TrustRadius API
 servers:
 - url: https://api.trustradius.com/v1
 tags:
@@ -116,6 +112,13 @@ paths:
       tags:
       - Legacy
   /accounts/{account_id}:
+    parameters:
+    - schema:
+        type: string
+      name: account_id
+      description: The unique identifier for the account being queries.
+      in: path
+      required: true
     get:
       operationId: account_details
       responses:
@@ -143,88 +146,11 @@ paths:
         httpMethod: GET
         type: http_proxy
       description: Gets company firmographic information, visitor counts and visit activity for each identified company researching the caller's product and categories on TrustRadius.
-      summary: Gets firmographic information , visitor counts and visit activity for each identified company researching the caller's product and categories on TrustRadius.
+      summary: Gets firmographic information , visitor counts and visit activity for each…
       tags:
       - Legacy
-    parameters:
-    - schema:
-        type: string
-      name: account_id
-      description: The unique identifier for the account being queries.
-      in: path
-      required: true
 components:
-  parameters:
-    filters_end-date:
-      name: end-date
-      in: query
-      description: For time-series data, this filters the results to include those occurring before or on the given date. Expected to be in ISO 8601 format.
-      schema:
-        type: string
-        format: date
-    filters_start-date:
-      name: start-date
-      in: query
-      description: For time-series data, this filters the results to include those occurring on or after the given date. Expected to be in ISO 8601 format.
-      schema:
-        type: string
-        format: date
-    format:
-      name: format
-      in: query
-      description: Specifies the format of the results. Can be either "csv" or "json" (the default).
-      schema:
-        type: string
-        enum:
-        - csv
-        - json
-        default: json
-    ids_products-multiple:
-      name: products
-      in: query
-      description: Id of the product or products to get traffic data for in a comma-separated format (e.g., "products=id1,id2").
-      schema:
-        type: string
-    listPaging_limit:
-      name: limit
-      in: query
-      description: The maximum number of records to return.
-      schema:
-        type: integer
-        minimum: 1
-    listPaging_skip:
-      name: skip
-      in: query
-      description: The number of records to skip before returning records. This is most useful in combination with "limit" for paging through results.
-      schema:
-        type: integer
-        minimum: 0
-    sort:
-      in: query
-      name: sort
-      description: Specifies the data fields to sort by as a comma-separated list of fields. Field names can be preceded by a hyphen to indicate that they should be sorted in descending order of values.
-      schema:
-        type: string
   responses:
-    not-found:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              name:
-                type: string
-                enum:
-                - NotFound
-                description: The name is always "NotFound".
-              status:
-                type: number
-                enum:
-                - 404
-                description: The HTTP status code is always 404.
-              message:
-                type: string
     validation-error:
       description: One or more input parameters failed validation.
       content:
@@ -270,74 +196,77 @@ components:
                         - param
                         - header
                         description: The input location (path parameter, body property, query parameter, or header value) where this parameter was received.
+    not-found:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                enum:
+                - NotFound
+                description: The name is always "NotFound".
+              status:
+                type: number
+                enum:
+                - 404
+                description: The HTTP status code is always 404.
+              message:
+                type: string
+  parameters:
+    filters_start-date:
+      name: start-date
+      in: query
+      description: For time-series data, this filters the results to include those occurring on or after the given date. Expected to be in ISO 8601 format.
+      schema:
+        type: string
+        format: date
+    listPaging_limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return.
+      schema:
+        type: integer
+        minimum: 1
+    ids_products-multiple:
+      name: products
+      in: query
+      description: Id of the product or products to get traffic data for in a comma-separated format (e.g., "products=id1,id2").
+      schema:
+        type: string
+    listPaging_skip:
+      name: skip
+      in: query
+      description: The number of records to skip before returning records. This is most useful in combination with "limit" for paging through results.
+      schema:
+        type: integer
+        minimum: 0
+    sort:
+      in: query
+      name: sort
+      description: Specifies the data fields to sort by as a comma-separated list of fields. Field names can be preceded by a hyphen to indicate that they should be sorted in descending order of values.
+      schema:
+        type: string
+    format:
+      name: format
+      in: query
+      description: Specifies the format of the results. Can be either "csv" or "json" (the default).
+      schema:
+        type: string
+        enum:
+        - csv
+        - json
+        default: json
+    filters_end-date:
+      name: end-date
+      in: query
+      description: For time-series data, this filters the results to include those occurring before or on the given date. Expected to be in ISO 8601 format.
+      schema:
+        type: string
+        format: date
   schemas:
-    Account:
-      title: Account
-      type: object
-      properties:
-        id:
-          type: string
-        url:
-          type: string
-        company:
-          type: object
-          properties:
-            name:
-              type: string
-            domain:
-              nullable: true
-              type: string
-            industry:
-              description: Standard Industrial Classification name
-              nullable: true
-              type: string
-            sicCode:
-              description: Standard Industrial Classification code for major industry
-              nullable: true
-              type: string
-            companySize:
-              description: A range of numbers of employees
-              nullable: true
-              type: string
-            city:
-              nullable: true
-              type: string
-            state:
-              nullable: true
-              type: string
-            stateCode:
-              nullable: true
-              type: string
-            country:
-              nullable: true
-              type: string
-            countryCode:
-              minLength: 2
-              maxLength: 2
-              nullable: true
-              type: string
-            postalCode:
-              nullable: true
-              type: string
-            facebook:
-              nullable: true
-              type: string
-            linkedIn:
-              nullable: true
-              type: string
-            twitter:
-              nullable: true
-              type: string
-    AccountDetail:
-      title: AccountDetail
-      allOf:
-      - $ref: '#/components/schemas/Account'
-      - type: object
-        properties:
-          visitors:
-            type: array
-            items:
-              $ref: '#/components/schemas/Visitor'
     Visitor:
       title: Visitor
       type: object
@@ -348,66 +277,6 @@ components:
           type: string
         account_id:
           type: string
-    VisitorInsightsCompany:
-      title: Visitor Insights Company
-      type: object
-      properties:
-        companyName:
-          type: string
-        companyCategory:
-          description: Standard Industrial Classification name
-          nullable: true
-          type: string
-        companySicCode:
-          description: Standard Industrial Classification code
-          nullable: true
-          type: string
-        companySize:
-          description: A range of numbers of employees
-          nullable: true
-          type: string
-        companyCity:
-          nullable: true
-          type: string
-        companyRegion:
-          nullable: true
-          type: string
-        companyRegionCode:
-          nullable: true
-          type: string
-        companyCountry:
-          nullable: true
-          type: string
-        companyCountryCode:
-          minLength: 2
-          maxLength: 2
-          nullable: true
-          type: string
-        companyFacebook:
-          nullable: true
-          type: string
-        companyLinkedinId:
-          nullable: true
-          type: string
-        companyTwitter:
-          nullable: true
-          type: string
-        companyWebsite:
-          nullable: true
-          type: string
-        visits:
-          type: integer
-          minimum: 0
-          description: The number of visits from this company during the specified date range.
-        date:
-          type: string
-          format: date-time
-        product:
-          type: string
-        productId:
-          type: string
-        vendor:
-          type: string
     VisitorInsightsPages:
       title: Visitor Insights Pages
       description: Similar to Visitor Insights Company model, but adds `num_visitors` and page-specific information.
@@ -417,45 +286,57 @@ components:
           type: string
         companyCategory:
           description: Standard Industrial Classification name
-          nullable: true
-          type: string
+          type:
+          - string
+          - 'null'
         companySicCode:
           description: Standard Industrial Classification code
-          nullable: true
-          type: string
+          type:
+          - string
+          - 'null'
         companySize:
           description: A range of numbers of employees
-          nullable: true
-          type: string
+          type:
+          - string
+          - 'null'
         companyCity:
-          nullable: true
-          type: string
+          type:
+          - string
+          - 'null'
         companyRegion:
-          nullable: true
-          type: string
+          type:
+          - string
+          - 'null'
         companyRegionCode:
-          nullable: true
-          type: string
+          type:
+          - string
+          - 'null'
         companyCountry:
-          nullable: true
-          type: string
+          type:
+          - string
+          - 'null'
         companyCountryCode:
           minLength: 2
           maxLength: 2
-          nullable: true
-          type: string
+          type:
+          - string
+          - 'null'
         companyFacebook:
-          nullable: true
-          type: string
+          type:
+          - string
+          - 'null'
         companyLinkedinId:
-          nullable: true
-          type: string
+          type:
+          - string
+          - 'null'
         companyTwitter:
-          nullable: true
-          type: string
+          type:
+          - string
+          - 'null'
         companyWebsite:
-          nullable: true
-          type: string
+          type:
+          - string
+          - 'null'
         visits:
           type: integer
           minimum: 0
@@ -478,6 +359,158 @@ components:
           type: string
         vendor:
           type: string
+    Account:
+      title: Account
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        company:
+          type: object
+          properties:
+            name:
+              type: string
+            domain:
+              type:
+              - string
+              - 'null'
+            industry:
+              description: Standard Industrial Classification name
+              type:
+              - string
+              - 'null'
+            sicCode:
+              description: Standard Industrial Classification code for major industry
+              type:
+              - string
+              - 'null'
+            companySize:
+              description: A range of numbers of employees
+              type:
+              - string
+              - 'null'
+            city:
+              type:
+              - string
+              - 'null'
+            state:
+              type:
+              - string
+              - 'null'
+            stateCode:
+              type:
+              - string
+              - 'null'
+            country:
+              type:
+              - string
+              - 'null'
+            countryCode:
+              minLength: 2
+              maxLength: 2
+              type:
+              - string
+              - 'null'
+            postalCode:
+              type:
+              - string
+              - 'null'
+            facebook:
+              type:
+              - string
+              - 'null'
+            linkedIn:
+              type:
+              - string
+              - 'null'
+            twitter:
+              type:
+              - string
+              - 'null'
+    VisitorInsightsCompany:
+      title: Visitor Insights Company
+      type: object
+      properties:
+        companyName:
+          type: string
+        companyCategory:
+          description: Standard Industrial Classification name
+          type:
+          - string
+          - 'null'
+        companySicCode:
+          description: Standard Industrial Classification code
+          type:
+          - string
+          - 'null'
+        companySize:
+          description: A range of numbers of employees
+          type:
+          - string
+          - 'null'
+        companyCity:
+          type:
+          - string
+          - 'null'
+        companyRegion:
+          type:
+          - string
+          - 'null'
+        companyRegionCode:
+          type:
+          - string
+          - 'null'
+        companyCountry:
+          type:
+          - string
+          - 'null'
+        companyCountryCode:
+          minLength: 2
+          maxLength: 2
+          type:
+          - string
+          - 'null'
+        companyFacebook:
+          type:
+          - string
+          - 'null'
+        companyLinkedinId:
+          type:
+          - string
+          - 'null'
+        companyTwitter:
+          type:
+          - string
+          - 'null'
+        companyWebsite:
+          type:
+          - string
+          - 'null'
+        visits:
+          type: integer
+          minimum: 0
+          description: The number of visits from this company during the specified date range.
+        date:
+          type: string
+          format: date-time
+        product:
+          type: string
+        productId:
+          type: string
+        vendor:
+          type: string
+    AccountDetail:
+      title: AccountDetail
+      allOf:
+      - $ref: '#/components/schemas/Account'
+      - type: object
+        properties:
+          visitors:
+            type: array
+            items:
+              $ref: '#/components/schemas/Visitor'
   securitySchemes:
     x-api-key:
       name: x-api-key

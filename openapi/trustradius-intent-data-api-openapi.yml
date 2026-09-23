@@ -1,12 +1,8 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
   version: '1.1'
-  title: TrustRadius API — Intent Data
-  description: TrustRadius API operations for Intent Data.
-  contact:
-    name: TrustRadius Product
-    email: product@trustradius.com
-    url: https://apidocs.trustradius.com/
+  title: TrustRadius Intent Data API
+  description: TrustRadius API
 servers:
 - url: https://api.trustradius.com/v1
 tags:
@@ -65,6 +61,51 @@ paths:
       - Intent Data
 components:
   responses:
+    validation-error:
+      description: One or more input parameters failed validation.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                enum:
+                - ValidationError
+                default: ValidationError
+                description: The name is always "ValidationError".
+              status:
+                type: number
+                enum:
+                - 400
+                default: 400
+                description: The HTTP status code is always 400.
+              message:
+                type: string
+                description: An error message. This may be a generic error message if parameter-specific errors are also included in the `errors` array.
+              errors:
+                type: array
+                description: This can be an array of message strings or an array of objects that contain a message, field name, and location.
+                items:
+                  oneOf:
+                  - type: string
+                    description: Any error message string.
+                  - type: object
+                    properties:
+                      param:
+                        type: string
+                        description: The name of the input parameter that is not valid.
+                      msg:
+                        type: string
+                        description: An error message specifically for this parameter.
+                      location:
+                        type: string
+                        enum:
+                        - body
+                        - query
+                        - param
+                        - header
+                        description: The input location (path parameter, body property, query parameter, or header value) where this parameter was received.
     intent-data:
       description: A successful call returns an object containing a list of accounts which have been active during the requested date range. Each account contains a list of the activities performed by vistors from the account.
       content:
@@ -287,51 +328,6 @@ components:
                 description: The HTTP status code is always 404.
               message:
                 type: string
-    validation-error:
-      description: One or more input parameters failed validation.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              name:
-                type: string
-                enum:
-                - ValidationError
-                default: ValidationError
-                description: The name is always "ValidationError".
-              status:
-                type: number
-                enum:
-                - 400
-                default: 400
-                description: The HTTP status code is always 400.
-              message:
-                type: string
-                description: An error message. This may be a generic error message if parameter-specific errors are also included in the `errors` array.
-              errors:
-                type: array
-                description: This can be an array of message strings or an array of objects that contain a message, field name, and location.
-                items:
-                  oneOf:
-                  - type: string
-                    description: Any error message string.
-                  - type: object
-                    properties:
-                      param:
-                        type: string
-                        description: The name of the input parameter that is not valid.
-                      msg:
-                        type: string
-                        description: An error message specifically for this parameter.
-                      location:
-                        type: string
-                        enum:
-                        - body
-                        - query
-                        - param
-                        - header
-                        description: The input location (path parameter, body property, query parameter, or header value) where this parameter was received.
   securitySchemes:
     x-api-key:
       name: x-api-key

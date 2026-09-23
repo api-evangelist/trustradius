@@ -1,34 +1,28 @@
 {
   "provider": "trustradius",
-  "generated": "2026-08-14",
-  "source": "openapi/_original/trustradius-api-openapi.yml (provider-published OpenAPI 3.0.0 v1.1, exported from https://stoplight.io/api/v1/projects/trustradius/public-api/nodes/reference/api.oas3.yml)",
   "sources": [
     "_original/trustradius-api-openapi.yml"
   ],
   "outputs": [
-    "trustradius-product-data-api-openapi.yml",
     "trustradius-intent-data-api-openapi.yml",
+    "trustradius-legacy-api-openapi.yml",
+    "trustradius-product-data-api-openapi.yml",
     "trustradius-traffic-data-api-openapi.yml",
-    "trustradius-trustquotes-api-openapi.yml",
-    "trustradius-legacy-api-openapi.yml"
+    "trustradius-trustquotes-api-openapi.yml"
   ],
-  "operations": 11,
-  "archived": [
-    "_scaffold/trustradius-public-openapi.yml",
-    "_scaffold/trustradius-reviews-openapi.yml",
-    "_scaffold/trustradius-categories-api-openapi.yml",
-    "_scaffold/trustradius-companies-api-openapi.yml",
-    "_scaffold/trustradius-products-api-openapi.yml",
-    "_scaffold/trustradius-reviews-api-openapi.yml"
-  ],
+  "archived": [],
   "errors": [],
-  "warnings": [
-    "Declared tag 'Webhooks' has zero operations attached in the source document; no output file was produced for it.",
-    "Declared tag 'Reports' has zero operations attached in the source document; report operations carry Traffic Data or Legacy instead.",
-    "Eight operations declare 400 and 404 responses with no description and no content schema."
-  ],
+  "warnings": [],
   "notes": [
-    "The six previously-refined documents were fabricated by the 2026-05-04 scaffold sweep and describe endpoints that do not exist. Quarantined to _scaffold/ with a README rather than deleted."
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "trustradius-api-openapi.yml: upgraded openapi 3.0.0 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "trustradius-intent-data-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "trustradius-legacy-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "trustradius-product-data-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "trustradius-traffic-data-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "trustradius-trustquotes-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

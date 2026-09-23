@@ -1,12 +1,8 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
   version: '1.1'
-  title: TrustRadius API — Product Data
-  description: TrustRadius API operations for Product Data.
-  contact:
-    name: TrustRadius Product
-    email: product@trustradius.com
-    url: https://apidocs.trustradius.com/
+  title: TrustRadius Product Data API
+  description: TrustRadius API
 servers:
 - url: https://api.trustradius.com/v1
 tags:
@@ -103,7 +99,7 @@ paths:
                           type: integer
                         url:
                           type: string
-      summary: Gets product information such as TrustRadius (TR) Score, Star Score, Review Counts
+      summary: Gets product information such as TrustRadius (TR) Score, Star Score, Review…
       parameters:
       - in: query
         name: products
