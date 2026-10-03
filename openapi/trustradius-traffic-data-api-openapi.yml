@@ -117,21 +117,67 @@ paths:
       tags:
       - Traffic Data
 components:
+  schemas:
+    TrafficProduct:
+      type: object
+      title: Traffic Product
+      properties:
+        date:
+          type: string
+        vendor:
+          type: string
+        productId:
+          type: string
+        product:
+          type: string
+        categoryName:
+          type: string
+        categoryId:
+          type: string
+        totalPageViews:
+          type: integer
+        totalVisits:
+          type: integer
+        totalVisitors:
+          type: integer
+        totalCategoryPageViews:
+          type: integer
+        totalCategoryVisits:
+          type: integer
+        totalCategoryVisitors:
+          type: integer
+      required:
+      - date
+      - product
+      - productId
+      - categoryName
+      - categoryId
+      - totalPageViews
+      - totalVisits
+      - totalVisitors
+    TrafficPage:
+      title: Traffic Page
+      type: object
+      properties:
+        date:
+          type: string
+        vendor:
+          type: string
+        productId:
+          type: string
+        product:
+          type: string
+        pageType:
+          type: string
+        pageTitle:
+          type: string
+        url:
+          type: string
+        totalPageViews:
+          type: integer
+        totalVisitors:
+          type: integer
   parameters:
-    filters_end-date:
-      name: end-date
-      in: query
-      description: For time-series data, this filters the results to include those occurring before or on the given date. Expected to be in ISO 8601 format.
-      schema:
-        type: string
-        format: date
-    filters_start-date:
-      name: start-date
-      in: query
-      description: For time-series data, this filters the results to include those occurring on or after the given date. Expected to be in ISO 8601 format.
-      schema:
-        type: string
-        format: date
     listPaging_limit:
       name: limit
       in: query
@@ -146,6 +192,20 @@ components:
       schema:
         type: integer
         minimum: 0
+    filters_start-date:
+      name: start-date
+      in: query
+      description: For time-series data, this filters the results to include those occurring on or after the given date. Expected to be in ISO 8601 format.
+      schema:
+        type: string
+        format: date
+    filters_end-date:
+      name: end-date
+      in: query
+      description: For time-series data, this filters the results to include those occurring before or on the given date. Expected to be in ISO 8601 format.
+      schema:
+        type: string
+        format: date
     sort:
       in: query
       name: sort
@@ -227,66 +287,6 @@ components:
                 description: The HTTP status code is always 404.
               message:
                 type: string
-  schemas:
-    TrafficProduct:
-      type: object
-      title: Traffic Product
-      properties:
-        date:
-          type: string
-        vendor:
-          type: string
-        productId:
-          type: string
-        product:
-          type: string
-        categoryName:
-          type: string
-        categoryId:
-          type: string
-        totalPageViews:
-          type: integer
-        totalVisits:
-          type: integer
-        totalVisitors:
-          type: integer
-        totalCategoryPageViews:
-          type: integer
-        totalCategoryVisits:
-          type: integer
-        totalCategoryVisitors:
-          type: integer
-      required:
-      - date
-      - product
-      - productId
-      - categoryName
-      - categoryId
-      - totalPageViews
-      - totalVisits
-      - totalVisitors
-    TrafficPage:
-      title: Traffic Page
-      type: object
-      properties:
-        date:
-          type: string
-        vendor:
-          type: string
-        productId:
-          type: string
-        product:
-          type: string
-        pageType:
-          type: string
-        pageTitle:
-          type: string
-        url:
-          type: string
-        totalPageViews:
-          type: integer
-        totalVisitors:
-          type: integer
   securitySchemes:
     x-api-key:
       name: x-api-key

@@ -290,18 +290,83 @@ paths:
       tags:
       - TrustQuotes
 components:
+  responses:
+    validation-error:
+      description: One or more input parameters failed validation.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                enum:
+                - ValidationError
+                default: ValidationError
+                description: The name is always "ValidationError".
+              status:
+                type: number
+                enum:
+                - 400
+                default: 400
+                description: The HTTP status code is always 400.
+              message:
+                type: string
+                description: An error message. This may be a generic error message if parameter-specific errors are also included in the `errors` array.
+              errors:
+                type: array
+                description: This can be an array of message strings or an array of objects that contain a message, field name, and location.
+                items:
+                  oneOf:
+                  - type: string
+                    description: Any error message string.
+                  - type: object
+                    properties:
+                      param:
+                        type: string
+                        description: The name of the input parameter that is not valid.
+                      msg:
+                        type: string
+                        description: An error message specifically for this parameter.
+                      location:
+                        type: string
+                        enum:
+                        - body
+                        - query
+                        - param
+                        - header
+                        description: The input location (path parameter, body property, query parameter, or header value) where this parameter was received.
+    not-found:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                enum:
+                - NotFound
+                description: The name is always "NotFound".
+              status:
+                type: number
+                enum:
+                - 404
+                description: The HTTP status code is always 404.
+              message:
+                type: string
   parameters:
-    filters_end-date:
-      name: end-date
-      in: query
-      description: For time-series data, this filters the results to include those occurring before or on the given date. Expected to be in ISO 8601 format.
-      schema:
-        type: string
-        format: date
     filters_start-date:
       name: start-date
       in: query
       description: For time-series data, this filters the results to include those occurring on or after the given date. Expected to be in ISO 8601 format.
+      schema:
+        type: string
+        format: date
+    filters_end-date:
+      name: end-date
+      in: query
+      description: For time-series data, this filters the results to include those occurring before or on the given date. Expected to be in ISO 8601 format.
       schema:
         type: string
         format: date
@@ -328,6 +393,47 @@ components:
         - json
         default: json
   schemas:
+    Tags:
+      type: object
+      title: Tags
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        sequence:
+          type: number
+        vendor:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        products:
+          type: object
+          properties:
+            ids:
+              type: array
+              items:
+                type: string
+            names:
+              type: array
+              items:
+                type: string
+        tagGroup:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            type:
+              type: string
+            sequence:
+              type: number
+            scope:
+              type: string
     TrustQuotes:
       type: object
       title: Trust Quotes
@@ -411,112 +517,6 @@ components:
           type: array
           items:
             type: string
-    Tags:
-      type: object
-      title: Tags
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        sequence:
-          type: number
-        vendor:
-          type: object
-          properties:
-            id:
-              type: string
-            name:
-              type: string
-        products:
-          type: object
-          properties:
-            ids:
-              type: array
-              items:
-                type: string
-            names:
-              type: array
-              items:
-                type: string
-        tagGroup:
-          type: object
-          properties:
-            id:
-              type: string
-            name:
-              type: string
-            type:
-              type: string
-            sequence:
-              type: number
-            scope:
-              type: string
-  responses:
-    validation-error:
-      description: One or more input parameters failed validation.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              name:
-                type: string
-                enum:
-                - ValidationError
-                default: ValidationError
-                description: The name is always "ValidationError".
-              status:
-                type: number
-                enum:
-                - 400
-                default: 400
-                description: The HTTP status code is always 400.
-              message:
-                type: string
-                description: An error message. This may be a generic error message if parameter-specific errors are also included in the `errors` array.
-              errors:
-                type: array
-                description: This can be an array of message strings or an array of objects that contain a message, field name, and location.
-                items:
-                  oneOf:
-                  - type: string
-                    description: Any error message string.
-                  - type: object
-                    properties:
-                      param:
-                        type: string
-                        description: The name of the input parameter that is not valid.
-                      msg:
-                        type: string
-                        description: An error message specifically for this parameter.
-                      location:
-                        type: string
-                        enum:
-                        - body
-                        - query
-                        - param
-                        - header
-                        description: The input location (path parameter, body property, query parameter, or header value) where this parameter was received.
-    not-found:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              name:
-                type: string
-                enum:
-                - NotFound
-                description: The name is always "NotFound".
-              status:
-                type: number
-                enum:
-                - 404
-                description: The HTTP status code is always 404.
-              message:
-                type: string
   securitySchemes:
     x-api-key:
       name: x-api-key

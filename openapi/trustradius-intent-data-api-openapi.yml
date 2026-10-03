@@ -61,70 +61,6 @@ paths:
       - Intent Data
 components:
   responses:
-    validation-error:
-      description: One or more input parameters failed validation.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              name:
-                type: string
-                enum:
-                - ValidationError
-                default: ValidationError
-                description: The name is always "ValidationError".
-              status:
-                type: number
-                enum:
-                - 400
-                default: 400
-                description: The HTTP status code is always 400.
-              message:
-                type: string
-                description: An error message. This may be a generic error message if parameter-specific errors are also included in the `errors` array.
-              errors:
-                type: array
-                description: This can be an array of message strings or an array of objects that contain a message, field name, and location.
-                items:
-                  oneOf:
-                  - type: string
-                    description: Any error message string.
-                  - type: object
-                    properties:
-                      param:
-                        type: string
-                        description: The name of the input parameter that is not valid.
-                      msg:
-                        type: string
-                        description: An error message specifically for this parameter.
-                      location:
-                        type: string
-                        enum:
-                        - body
-                        - query
-                        - param
-                        - header
-                        description: The input location (path parameter, body property, query parameter, or header value) where this parameter was received.
-    not-found:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              name:
-                type: string
-                enum:
-                - NotFound
-                description: The name is always "NotFound".
-              status:
-                type: number
-                enum:
-                - 404
-                description: The HTTP status code is always 404.
-              message:
-                type: string
     intent-data:
       description: A successful call returns an object containing a list of accounts which have been active during the requested date range. Each account contains a list of the activities performed by vistors from the account.
       content:
@@ -328,6 +264,70 @@ components:
                     source: Licensed Product
                   visitorCount: 12
                 more: false
+    not-found:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                enum:
+                - NotFound
+                description: The name is always "NotFound".
+              status:
+                type: number
+                enum:
+                - 404
+                description: The HTTP status code is always 404.
+              message:
+                type: string
+    validation-error:
+      description: One or more input parameters failed validation.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                enum:
+                - ValidationError
+                default: ValidationError
+                description: The name is always "ValidationError".
+              status:
+                type: number
+                enum:
+                - 400
+                default: 400
+                description: The HTTP status code is always 400.
+              message:
+                type: string
+                description: An error message. This may be a generic error message if parameter-specific errors are also included in the `errors` array.
+              errors:
+                type: array
+                description: This can be an array of message strings or an array of objects that contain a message, field name, and location.
+                items:
+                  oneOf:
+                  - type: string
+                    description: Any error message string.
+                  - type: object
+                    properties:
+                      param:
+                        type: string
+                        description: The name of the input parameter that is not valid.
+                      msg:
+                        type: string
+                        description: An error message specifically for this parameter.
+                      location:
+                        type: string
+                        enum:
+                        - body
+                        - query
+                        - param
+                        - header
+                        description: The input location (path parameter, body property, query parameter, or header value) where this parameter was received.
   securitySchemes:
     x-api-key:
       name: x-api-key
