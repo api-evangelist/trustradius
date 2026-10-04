@@ -150,79 +150,203 @@ paths:
       tags:
       - Legacy
 components:
+  parameters:
+    filters_start-date:
+      name: start-date
+      in: query
+      description: For time-series data, this filters the results to include those occurring on or after the given date. Expected to be in ISO 8601 format.
+      schema:
+        type: string
+        format: date
+    filters_end-date:
+      name: end-date
+      in: query
+      description: For time-series data, this filters the results to include those occurring before or on the given date. Expected to be in ISO 8601 format.
+      schema:
+        type: string
+        format: date
+    sort:
+      in: query
+      name: sort
+      description: Specifies the data fields to sort by as a comma-separated list of fields. Field names can be preceded by a hyphen to indicate that they should be sorted in descending order of values.
+      schema:
+        type: string
+    format:
+      name: format
+      in: query
+      description: Specifies the format of the results. Can be either "csv" or "json" (the default).
+      schema:
+        type: string
+        enum:
+        - csv
+        - json
+        default: json
+    listPaging_skip:
+      name: skip
+      in: query
+      description: The number of records to skip before returning records. This is most useful in combination with "limit" for paging through results.
+      schema:
+        type: integer
+        minimum: 0
+    listPaging_limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return.
+      schema:
+        type: integer
+        minimum: 1
+    ids_products-multiple:
+      name: products
+      in: query
+      description: Id of the product or products to get traffic data for in a comma-separated format (e.g., "products=id1,id2").
+      schema:
+        type: string
+  responses:
+    validation-error:
+      description: One or more input parameters failed validation.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                enum:
+                - ValidationError
+                default: ValidationError
+                description: The name is always "ValidationError".
+              status:
+                type: number
+                enum:
+                - 400
+                default: 400
+                description: The HTTP status code is always 400.
+              message:
+                type: string
+                description: An error message. This may be a generic error message if parameter-specific errors are also included in the `errors` array.
+              errors:
+                type: array
+                description: This can be an array of message strings or an array of objects that contain a message, field name, and location.
+                items:
+                  oneOf:
+                  - type: string
+                    description: Any error message string.
+                  - type: object
+                    properties:
+                      param:
+                        type: string
+                        description: The name of the input parameter that is not valid.
+                      msg:
+                        type: string
+                        description: An error message specifically for this parameter.
+                      location:
+                        type: string
+                        enum:
+                        - body
+                        - query
+                        - param
+                        - header
+                        description: The input location (path parameter, body property, query parameter, or header value) where this parameter was received.
+    not-found:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                enum:
+                - NotFound
+                description: The name is always "NotFound".
+              status:
+                type: number
+                enum:
+                - 404
+                description: The HTTP status code is always 404.
+              message:
+                type: string
   schemas:
-    VisitorInsightsCompany:
-      title: Visitor Insights Company
+    Account:
+      title: Account
       type: object
       properties:
-        companyName:
+        id:
           type: string
-        companyCategory:
-          description: Standard Industrial Classification name
-          type:
-          - string
-          - 'null'
-        companySicCode:
-          description: Standard Industrial Classification code
-          type:
-          - string
-          - 'null'
-        companySize:
-          description: A range of numbers of employees
-          type:
-          - string
-          - 'null'
-        companyCity:
-          type:
-          - string
-          - 'null'
-        companyRegion:
-          type:
-          - string
-          - 'null'
-        companyRegionCode:
-          type:
-          - string
-          - 'null'
-        companyCountry:
-          type:
-          - string
-          - 'null'
-        companyCountryCode:
-          minLength: 2
-          maxLength: 2
-          type:
-          - string
-          - 'null'
-        companyFacebook:
-          type:
-          - string
-          - 'null'
-        companyLinkedinId:
-          type:
-          - string
-          - 'null'
-        companyTwitter:
-          type:
-          - string
-          - 'null'
-        companyWebsite:
-          type:
-          - string
-          - 'null'
-        visits:
-          type: integer
-          minimum: 0
-          description: The number of visits from this company during the specified date range.
-        date:
+        url:
           type: string
-          format: date-time
-        product:
-          type: string
-        productId:
-          type: string
-        vendor:
-          type: string
+        company:
+          type: object
+          properties:
+            name:
+              type: string
+            domain:
+              type:
+              - string
+              - 'null'
+            industry:
+              description: Standard Industrial Classification name
+              type:
+              - string
+              - 'null'
+            sicCode:
+              description: Standard Industrial Classification code for major industry
+              type:
+              - string
+              - 'null'
+            companySize:
+              description: A range of numbers of employees
+              type:
+              - string
+              - 'null'
+            city:
+              type:
+              - string
+              - 'null'
+            state:
+              type:
+              - string
+              - 'null'
+            stateCode:
+              type:
+              - string
+              - 'null'
+            country:
+              type:
+              - string
+              - 'null'
+            countryCode:
+              minLength: 2
+              maxLength: 2
+              type:
+              - string
+              - 'null'
+            postalCode:
+              type:
+              - string
+              - 'null'
+            facebook:
+              type:
+              - string
+              - 'null'
+            linkedIn:
+              type:
+              - string
+              - 'null'
+            twitter:
+              type:
+              - string
+              - 'null'
+    AccountDetail:
+      title: AccountDetail
+      allOf:
+      - $ref: '#/components/schemas/Account'
+      - type: object
+        properties:
+          visitors:
+            type: array
+            items:
+              $ref: '#/components/schemas/Visitor'
     Visitor:
       title: Visitor
       type: object
@@ -315,202 +439,78 @@ components:
           type: string
         vendor:
           type: string
-    Account:
-      title: Account
+    VisitorInsightsCompany:
+      title: Visitor Insights Company
       type: object
       properties:
-        id:
+        companyName:
           type: string
-        url:
+        companyCategory:
+          description: Standard Industrial Classification name
+          type:
+          - string
+          - 'null'
+        companySicCode:
+          description: Standard Industrial Classification code
+          type:
+          - string
+          - 'null'
+        companySize:
+          description: A range of numbers of employees
+          type:
+          - string
+          - 'null'
+        companyCity:
+          type:
+          - string
+          - 'null'
+        companyRegion:
+          type:
+          - string
+          - 'null'
+        companyRegionCode:
+          type:
+          - string
+          - 'null'
+        companyCountry:
+          type:
+          - string
+          - 'null'
+        companyCountryCode:
+          minLength: 2
+          maxLength: 2
+          type:
+          - string
+          - 'null'
+        companyFacebook:
+          type:
+          - string
+          - 'null'
+        companyLinkedinId:
+          type:
+          - string
+          - 'null'
+        companyTwitter:
+          type:
+          - string
+          - 'null'
+        companyWebsite:
+          type:
+          - string
+          - 'null'
+        visits:
+          type: integer
+          minimum: 0
+          description: The number of visits from this company during the specified date range.
+        date:
           type: string
-        company:
-          type: object
-          properties:
-            name:
-              type: string
-            domain:
-              type:
-              - string
-              - 'null'
-            industry:
-              description: Standard Industrial Classification name
-              type:
-              - string
-              - 'null'
-            sicCode:
-              description: Standard Industrial Classification code for major industry
-              type:
-              - string
-              - 'null'
-            companySize:
-              description: A range of numbers of employees
-              type:
-              - string
-              - 'null'
-            city:
-              type:
-              - string
-              - 'null'
-            state:
-              type:
-              - string
-              - 'null'
-            stateCode:
-              type:
-              - string
-              - 'null'
-            country:
-              type:
-              - string
-              - 'null'
-            countryCode:
-              minLength: 2
-              maxLength: 2
-              type:
-              - string
-              - 'null'
-            postalCode:
-              type:
-              - string
-              - 'null'
-            facebook:
-              type:
-              - string
-              - 'null'
-            linkedIn:
-              type:
-              - string
-              - 'null'
-            twitter:
-              type:
-              - string
-              - 'null'
-    AccountDetail:
-      title: AccountDetail
-      allOf:
-      - $ref: '#/components/schemas/Account'
-      - type: object
-        properties:
-          visitors:
-            type: array
-            items:
-              $ref: '#/components/schemas/Visitor'
-  parameters:
-    listPaging_limit:
-      name: limit
-      in: query
-      description: The maximum number of records to return.
-      schema:
-        type: integer
-        minimum: 1
-    format:
-      name: format
-      in: query
-      description: Specifies the format of the results. Can be either "csv" or "json" (the default).
-      schema:
-        type: string
-        enum:
-        - csv
-        - json
-        default: json
-    filters_start-date:
-      name: start-date
-      in: query
-      description: For time-series data, this filters the results to include those occurring on or after the given date. Expected to be in ISO 8601 format.
-      schema:
-        type: string
-        format: date
-    listPaging_skip:
-      name: skip
-      in: query
-      description: The number of records to skip before returning records. This is most useful in combination with "limit" for paging through results.
-      schema:
-        type: integer
-        minimum: 0
-    filters_end-date:
-      name: end-date
-      in: query
-      description: For time-series data, this filters the results to include those occurring before or on the given date. Expected to be in ISO 8601 format.
-      schema:
-        type: string
-        format: date
-    ids_products-multiple:
-      name: products
-      in: query
-      description: Id of the product or products to get traffic data for in a comma-separated format (e.g., "products=id1,id2").
-      schema:
-        type: string
-    sort:
-      in: query
-      name: sort
-      description: Specifies the data fields to sort by as a comma-separated list of fields. Field names can be preceded by a hyphen to indicate that they should be sorted in descending order of values.
-      schema:
-        type: string
-  responses:
-    validation-error:
-      description: One or more input parameters failed validation.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              name:
-                type: string
-                enum:
-                - ValidationError
-                default: ValidationError
-                description: The name is always "ValidationError".
-              status:
-                type: number
-                enum:
-                - 400
-                default: 400
-                description: The HTTP status code is always 400.
-              message:
-                type: string
-                description: An error message. This may be a generic error message if parameter-specific errors are also included in the `errors` array.
-              errors:
-                type: array
-                description: This can be an array of message strings or an array of objects that contain a message, field name, and location.
-                items:
-                  oneOf:
-                  - type: string
-                    description: Any error message string.
-                  - type: object
-                    properties:
-                      param:
-                        type: string
-                        description: The name of the input parameter that is not valid.
-                      msg:
-                        type: string
-                        description: An error message specifically for this parameter.
-                      location:
-                        type: string
-                        enum:
-                        - body
-                        - query
-                        - param
-                        - header
-                        description: The input location (path parameter, body property, query parameter, or header value) where this parameter was received.
-    not-found:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              name:
-                type: string
-                enum:
-                - NotFound
-                description: The name is always "NotFound".
-              status:
-                type: number
-                enum:
-                - 404
-                description: The HTTP status code is always 404.
-              message:
-                type: string
+          format: date-time
+        product:
+          type: string
+        productId:
+          type: string
+        vendor:
+          type: string
   securitySchemes:
     x-api-key:
       name: x-api-key

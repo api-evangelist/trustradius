@@ -117,81 +117,7 @@ paths:
       tags:
       - Traffic Data
 components:
-  schemas:
-    TrafficProduct:
-      type: object
-      title: Traffic Product
-      properties:
-        date:
-          type: string
-        vendor:
-          type: string
-        productId:
-          type: string
-        product:
-          type: string
-        categoryName:
-          type: string
-        categoryId:
-          type: string
-        totalPageViews:
-          type: integer
-        totalVisits:
-          type: integer
-        totalVisitors:
-          type: integer
-        totalCategoryPageViews:
-          type: integer
-        totalCategoryVisits:
-          type: integer
-        totalCategoryVisitors:
-          type: integer
-      required:
-      - date
-      - product
-      - productId
-      - categoryName
-      - categoryId
-      - totalPageViews
-      - totalVisits
-      - totalVisitors
-    TrafficPage:
-      title: Traffic Page
-      type: object
-      properties:
-        date:
-          type: string
-        vendor:
-          type: string
-        productId:
-          type: string
-        product:
-          type: string
-        pageType:
-          type: string
-        pageTitle:
-          type: string
-        url:
-          type: string
-        totalPageViews:
-          type: integer
-        totalVisitors:
-          type: integer
   parameters:
-    listPaging_limit:
-      name: limit
-      in: query
-      description: The maximum number of records to return.
-      schema:
-        type: integer
-        minimum: 1
-    listPaging_skip:
-      name: skip
-      in: query
-      description: The number of records to skip before returning records. This is most useful in combination with "limit" for paging through results.
-      schema:
-        type: integer
-        minimum: 0
     filters_start-date:
       name: start-date
       in: query
@@ -222,6 +148,20 @@ components:
         - csv
         - json
         default: json
+    listPaging_skip:
+      name: skip
+      in: query
+      description: The number of records to skip before returning records. This is most useful in combination with "limit" for paging through results.
+      schema:
+        type: integer
+        minimum: 0
+    listPaging_limit:
+      name: limit
+      in: query
+      description: The maximum number of records to return.
+      schema:
+        type: integer
+        minimum: 1
   responses:
     validation-error:
       description: One or more input parameters failed validation.
@@ -287,6 +227,66 @@ components:
                 description: The HTTP status code is always 404.
               message:
                 type: string
+  schemas:
+    TrafficPage:
+      title: Traffic Page
+      type: object
+      properties:
+        date:
+          type: string
+        vendor:
+          type: string
+        productId:
+          type: string
+        product:
+          type: string
+        pageType:
+          type: string
+        pageTitle:
+          type: string
+        url:
+          type: string
+        totalPageViews:
+          type: integer
+        totalVisitors:
+          type: integer
+    TrafficProduct:
+      type: object
+      title: Traffic Product
+      properties:
+        date:
+          type: string
+        vendor:
+          type: string
+        productId:
+          type: string
+        product:
+          type: string
+        categoryName:
+          type: string
+        categoryId:
+          type: string
+        totalPageViews:
+          type: integer
+        totalVisits:
+          type: integer
+        totalVisitors:
+          type: integer
+        totalCategoryPageViews:
+          type: integer
+        totalCategoryVisits:
+          type: integer
+        totalCategoryVisitors:
+          type: integer
+      required:
+      - date
+      - product
+      - productId
+      - categoryName
+      - categoryId
+      - totalPageViews
+      - totalVisits
+      - totalVisitors
   securitySchemes:
     x-api-key:
       name: x-api-key

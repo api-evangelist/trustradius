@@ -290,6 +290,43 @@ paths:
       tags:
       - TrustQuotes
 components:
+  parameters:
+    filters_start-date:
+      name: start-date
+      in: query
+      description: For time-series data, this filters the results to include those occurring on or after the given date. Expected to be in ISO 8601 format.
+      schema:
+        type: string
+        format: date
+    filters_end-date:
+      name: end-date
+      in: query
+      description: For time-series data, this filters the results to include those occurring before or on the given date. Expected to be in ISO 8601 format.
+      schema:
+        type: string
+        format: date
+    sort:
+      in: query
+      name: sort
+      description: Specifies the data fields to sort by as a comma-separated list of fields. Field names can be preceded by a hyphen to indicate that they should be sorted in descending order of values.
+      schema:
+        type: string
+    format:
+      name: format
+      in: query
+      description: Specifies the format of the results. Can be either "csv" or "json" (the default).
+      schema:
+        type: string
+        enum:
+        - csv
+        - json
+        default: json
+    ids_products-multiple:
+      name: products
+      in: query
+      description: Id of the product or products to get traffic data for in a comma-separated format (e.g., "products=id1,id2").
+      schema:
+        type: string
   responses:
     validation-error:
       description: One or more input parameters failed validation.
@@ -355,43 +392,6 @@ components:
                 description: The HTTP status code is always 404.
               message:
                 type: string
-  parameters:
-    filters_start-date:
-      name: start-date
-      in: query
-      description: For time-series data, this filters the results to include those occurring on or after the given date. Expected to be in ISO 8601 format.
-      schema:
-        type: string
-        format: date
-    filters_end-date:
-      name: end-date
-      in: query
-      description: For time-series data, this filters the results to include those occurring before or on the given date. Expected to be in ISO 8601 format.
-      schema:
-        type: string
-        format: date
-    ids_products-multiple:
-      name: products
-      in: query
-      description: Id of the product or products to get traffic data for in a comma-separated format (e.g., "products=id1,id2").
-      schema:
-        type: string
-    sort:
-      in: query
-      name: sort
-      description: Specifies the data fields to sort by as a comma-separated list of fields. Field names can be preceded by a hyphen to indicate that they should be sorted in descending order of values.
-      schema:
-        type: string
-    format:
-      name: format
-      in: query
-      description: Specifies the format of the results. Can be either "csv" or "json" (the default).
-      schema:
-        type: string
-        enum:
-        - csv
-        - json
-        default: json
   schemas:
     Tags:
       type: object

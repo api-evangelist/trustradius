@@ -61,6 +61,25 @@ paths:
       - Intent Data
 components:
   responses:
+    not-found:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                enum:
+                - NotFound
+                description: The name is always "NotFound".
+              status:
+                type: number
+                enum:
+                - 404
+                description: The HTTP status code is always 404.
+              message:
+                type: string
     intent-data:
       description: A successful call returns an object containing a list of accounts which have been active during the requested date range. Each account contains a list of the activities performed by vistors from the account.
       content:
@@ -264,25 +283,6 @@ components:
                     source: Licensed Product
                   visitorCount: 12
                 more: false
-    not-found:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              name:
-                type: string
-                enum:
-                - NotFound
-                description: The name is always "NotFound".
-              status:
-                type: number
-                enum:
-                - 404
-                description: The HTTP status code is always 404.
-              message:
-                type: string
     validation-error:
       description: One or more input parameters failed validation.
       content:
