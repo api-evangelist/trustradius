@@ -1,4 +1,4 @@
-# TrustRadius (trustradius)
+# TrustRadius
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,225 +66,202 @@
 
 TrustRadius is a B2B buyer intelligence and software review platform that helps technology buyers make confident purchasing decisions and enables vendors to turn verified customer reviews into demand generation. Founded in 2012 and headquartered in Austin, Texas, and now part of HG Insights, TrustRadius hosts in-depth verified reviews averaging 400+ words, and provides vendors with downstream intent data showing which accounts are actively researching their products, competitors, and categories. The TrustRadius Public API is a single read-only REST surface at https://api.trustradius.com/v1 with eleven GET operations across five areas — product identity and scores, downstream intent activity, profile traffic reporting, licensed TrustQuotes review excerpts, and a legacy visitor-insights family. Authentication is one opaque API key in the lowercase x-api-key header, issued per vendor account from the Vendor Portal; the published request budget is 10 requests per second. Intent data is designed to be activated in Salesforce, HubSpot, 6sense, Demandbase, LinkedIn, Marketo, and Snowflake.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/apis.yml)
+**Areas:** B2B Software Reviews · Buyer Intelligence · Intent Data · Software Reviews · Reviews · Product Reviews · Content Syndication · Account Based Marketing · Marketing · Analytics
 
-## Scope
+## TrustRadius on APIs.io
 
-- **Type:** Index
-- **Access:** 3rd-Party
-- **Access model:** Paid vendor package · Sales-led · Public docs with a live mock (confidence: high)
+Everything profiled for TrustRadius is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/trustradius/](https://apis.io/providers/trustradius/)** — or go straight to one of the APIs or properties below.
 
-## Provenance of the specifications in this repo
+### APIs (5)
 
-The OpenAPI in `openapi/_original/trustradius-api-openapi.yml` is **published by TrustRadius**. It was
-exported on 2026-08-14 from the company's own Stoplight-hosted developer portal at
-<https://apidocs.trustradius.com/> — OpenAPI 3.0.0, `info.version` 1.1, 11 operations,
-`servers[0]` = `https://api.trustradius.com/v1`. The per-tag files in `openapi/` are splits of it;
-the originals are never mutated (our additions live in `overlays/` as OpenAPI Overlay 1.0.0 documents).
+- [TrustRadius Product Data API](https://apis.io/apis/trustradius/trustradius-product-data-api/) — Product identity and scoring. GET /product-ids exchanges a TrustRadius product slug for the opaque product `_id` and owning `vendor._id` that every other…
+- [TrustRadius Downstream Intent Data API](https://apis.io/apis/trustradius/trustradius-intent-data-api/) — Downstream intent activity — which accounts are researching a vendor's products, competitor products, and software categories on TrustRadius. GET /intent…
+- [TrustRadius TrustQuotes Content Syndication API](https://apis.io/apis/trustradius/trustradius-trustquotes-api/) — Licensed review-quote syndication. GET /trustquotes returns review excerpts with the quote text, a link and rating for the source review, reviewer identity…
+- [TrustRadius Traffic Data API](https://apis.io/apis/trustradius/trustradius-traffic-data-api/) — Profile traffic reporting. GET /reports/traffic/products returns page views, visits and visitors per product per day alongside the matching category-level…
+- [TrustRadius Legacy Visitor Insights API](https://apis.io/apis/trustradius/trustradius-legacy-visitor-insights-api/) — Identified-company reporting, tagged `Legacy` by TrustRadius in its own specification. GET /reports/visitor-insights/companies returns firmographics (name,…
 
-`openapi/_scaffold/` holds six **quarantined, fabricated** OpenAPI documents written by an API
-Evangelist scaffold pass in May 2026. They describe `/products`, `/categories`, `/companies` and
-`/reviews` endpoints that **do not exist**. They are kept, not deleted, so the defect stays auditable —
-see `openapi/_scaffold/README.md`. Every artifact that had been derived from them was rebuilt from the
-real specification in the same pass.
+### Published properties
 
-## Not published by TrustRadius
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-Recorded absences, each measured rather than assumed:
+#### MCP servers (1)
 
-- **No `/.well-known/` documents** on any host — every path 404s (403 at the API edge). See `well-known/`.
-- **No A2A agent card** at either the canonical or the legacy path.
-- **No MCP server.** `mcp/trustradius-mcp.yml` is an API Evangelist *candidate* tool set derived from the
-  published OpenAPI, marked `deployment.mode: none`, and deliberately **not** wired as an `MCPServer`
-  pointer in `apis.yml` — nobody ships a server, so nothing should score as if they did.
-- **No client SDK** in any public package registry, and no CLI.
-- **No changelog, no status page, no deprecation policy, no published SLA.**
-- **No event or webhook surface** — the published OpenAPI declares a `Webhooks` tag with zero operations.
-- **No `llms.txt`** — the one in `llms/` is generated by API Evangelist from the published contract.
-- **Compliance certifications are unverified**: <https://www.trustradius.com/security> returned HTTP 403
-  from a Cloudflare challenge on every attempt, and third-party aggregators are not accepted as evidence.
+Model Context Protocol servers that expose the API to agents.
 
-## Tags
+- [trustradius-mcp.yml](https://apis.io/servers/trustradius/trustradius-mcp-yml/)
 
-- B2B Software Reviews
-- Buyer Intelligence
-- Intent Data
-- Software Reviews
-- Reviews
-- Product Reviews
-- Content Syndication
-- Account Based Marketing
-- Marketing
-- Analytics
+#### Agentic access (1)
 
-## Timestamps
+Which operations an agent can call, which act, and which need a human in the loop.
 
-- **Created:** 2026-05-03
-- **Modified:** 2026-08-14
+- [Trustradius Agentic Access](https://apis.io/agentic-access/trustradius/trustradius-agentic-access/)
 
-## APIs
+#### JSON Schema (17)
 
-### TrustRadius Product Data API
+The data models the API reads and writes.
 
-Product identity and scoring. GET /product-ids exchanges a TrustRadius product slug for the opaque product `_id` and owning `vendor._id` that every other TrustRadius operation requires, and called with no parameters returns every published product under the calling vendor's profile. GET /product-scores returns the TrustRadius (TR) Score and star score — each as a {score, max} object — plus review, rating and combined counts. This is the entry point for the whole API.
+- [Account](https://apis.io/schemas/trustradius/trustradius-Account/)
+- [AccountActivity](https://apis.io/schemas/trustradius/trustradius-AccountActivity/)
+- [AccountDetail](https://apis.io/schemas/trustradius/trustradius-AccountDetail/)
+- [Activity](https://apis.io/schemas/trustradius/trustradius-Activity/)
+- [IntentRegistration](https://apis.io/schemas/trustradius/trustradius-IntentRegistration/)
+- [NameValuePair](https://apis.io/schemas/trustradius/trustradius-NameValuePair/)
+- [TrustRadius ProductScores](https://apis.io/schemas/trustradius/trustradius-ProductScores/)
+- [Tags](https://apis.io/schemas/trustradius/trustradius-Tags/)
+- [Traffic Page](https://apis.io/schemas/trustradius/trustradius-TrafficPage/)
+- [Traffic Product](https://apis.io/schemas/trustradius/trustradius-TrafficProduct/)
+- [Trust Quotes](https://apis.io/schemas/trustradius/trustradius-TrustQuotes/)
+- [Visit](https://apis.io/schemas/trustradius/trustradius-Visit/)
+- [VisitDetail](https://apis.io/schemas/trustradius/trustradius-VisitDetail/)
+- [Visitor](https://apis.io/schemas/trustradius/trustradius-Visitor/)
+- [VisitorDetail](https://apis.io/schemas/trustradius/trustradius-VisitorDetail/)
+- [Visitor Insights Company](https://apis.io/schemas/trustradius/trustradius-VisitorInsightsCompany/)
+- [Visitor Insights Pages](https://apis.io/schemas/trustradius/trustradius-VisitorInsightsPages/)
 
-- **Human URL:** [https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api](https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api)
-- **Base URL:** `https://api.trustradius.com/v1`
+#### JSON Structure (2)
 
-#### Tags
+Data models expressed in JSON Structure.
 
-- Products
-- Ratings
-- B2B Software Reviews
+- [Trustradius Product Scores Structure](https://apis.io/json-structure/trustradius/trustradius-product-scores-structure/)
+- [Trustradius Trustquote Structure](https://apis.io/json-structure/trustradius/trustradius-trustquote-structure/)
 
-#### Properties
+#### JSON-LD (1)
 
-- [OpenAPI](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/openapi/trustradius-product-data-api-openapi.yml)
-- [Overlay](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/overlays/trustradius-product-data-overlay.yaml)
-- [APIReference](https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api)
-- [Documentation](https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api)
-- [Authentication](https://trustradius.freshdesk.com/support/solutions/articles/43000639047)
+Linked-data contexts for the provider's vocabulary.
 
-### TrustRadius Downstream Intent Data API
+- [Trustradius Context](https://apis.io/jsonld/trustradius/trustradius-context/)
 
-Downstream intent activity — which accounts are researching a vendor's products, competitor products, and software categories on TrustRadius. GET /intent returns account records with an activity stream whose `type` is a closed enum of click, download, like and view, filtered by ISO 8601 `start_time`/`stop_time`, account domains, and activity names. Designed for activation in Salesforce, HubSpot, 6sense, Demandbase, Marketo, LinkedIn Matched Audiences and Snowflake. Category intent data is a separately quoted add-on to the vendor package.
+#### Vocabulary (1)
 
-- **Human URL:** [https://solutions.trustradius.com/products/downstream-intent-data/](https://solutions.trustradius.com/products/downstream-intent-data/)
-- **Base URL:** `https://api.trustradius.com/v1`
+The provider's domain terms, defined.
 
-#### Tags
+- [TrustRadius Vocabulary](https://apis.io/vocabularies/trustradius/trustradius-vocabulary/)
 
-- Intent Data
-- Buyer Intelligence
-- B2B
-- ABM
+#### Examples (11)
 
-#### Properties
+Example requests and responses.
 
-- [OpenAPI](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/openapi/trustradius-intent-data-api-openapi.yml)
-- [Overlay](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/overlays/trustradius-intent-data-overlay.yaml)
-- [AgentSkill](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/skills/trustradius-pull-downstream-intent.md)
-- [APIReference](https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api)
-- [Documentation](https://solutions.trustradius.com/products/downstream-intent-data/)
-- [Documentation](https://solutions.trustradius.com/integrations/)
-- [Authentication](https://trustradius.freshdesk.com/support/solutions/articles/43000639047)
+- [Trustradius Account Details Example](https://apis.io/examples/trustradius/trustradius-account-details-example/)
+- [Trustradius Get Traffic Page Types Example](https://apis.io/examples/trustradius/trustradius-get-traffic-page-types-example/)
+- [Trustradius Get Traffic Products Example](https://apis.io/examples/trustradius/trustradius-get-traffic-products-example/)
+- [Trustradius Intent Data Example](https://apis.io/examples/trustradius/trustradius-intent-data-example/)
+- [Trustradius Product Ids Get Example](https://apis.io/examples/trustradius/trustradius-product-ids-get-example/)
+- [Trustradius Product Scores Example](https://apis.io/examples/trustradius/trustradius-product-scores-example/)
+- [Trustradius Tags Get Example](https://apis.io/examples/trustradius/trustradius-tags-get-example/)
+- [Trustradius Tqw Pages Get Example](https://apis.io/examples/trustradius/trustradius-tqw-pages-get-example/)
+- [Trustradius Trustquotes Get Example](https://apis.io/examples/trustradius/trustradius-trustquotes-get-example/)
+- [Trustradius Visitor Insights Report Example](https://apis.io/examples/trustradius/trustradius-visitor-insights-report-example/)
+- [Trustradius Visitor Insights Report Pages Get Example](https://apis.io/examples/trustradius/trustradius-visitor-insights-report-pages-get-example/)
 
-### TrustRadius TrustQuotes Content Syndication API
+#### Overlays (5)
 
-Licensed review-quote syndication. GET /trustquotes returns review excerpts with the quote text, a link and rating for the source review, reviewer identity and firmographics, an isAnonymous flag, and the tags applied to the quote; GET /tags returns the tag vocabulary and its groups; GET /reports/syndication/tqw/pages reports how the TrustQuotes for Web widget is performing by page. Requires a Content Licensing entitlement. The self-serve TrustQuotes for Web JavaScript widget is the no-code alternative to this API.
+OpenAPI overlays, including conversational phrasing for each operation.
 
-- **Human URL:** [https://solutions.trustradius.com/products/content-licensing/](https://solutions.trustradius.com/products/content-licensing/)
-- **Base URL:** `https://api.trustradius.com/v1`
+- [Trustradius Intent Data Overlay](https://apis.io/overlays/trustradius/trustradius-intent-data-overlay/)
+- [Trustradius Legacy Overlay](https://apis.io/overlays/trustradius/trustradius-legacy-overlay/)
+- [Trustradius Product Data Overlay](https://apis.io/overlays/trustradius/trustradius-product-data-overlay/)
+- [Trustradius Traffic Data Overlay](https://apis.io/overlays/trustradius/trustradius-traffic-data-overlay/)
+- [Trustradius Trustquotes Overlay](https://apis.io/overlays/trustradius/trustradius-trustquotes-overlay/)
 
-#### Tags
+#### Governance rules (2)
 
-- Content Licensing
-- Reviews
-- Marketing
-- B2B
+Spectral rulesets for the provider's contracts.
 
-#### Properties
+- [TrustRadius — jsonschema rules](https://apis.io/rules/trustradius/trustradius-jsonschema-spectral-rules/)
+- [TrustRadius API Rules](https://apis.io/rules/trustradius/trustradius-rules/)
 
-- [OpenAPI](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/openapi/trustradius-trustquotes-api-openapi.yml)
-- [Overlay](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/overlays/trustradius-trustquotes-overlay.yaml)
-- [AgentSkill](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/skills/trustradius-syndicate-trustquotes.md)
-- [APIReference](https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api)
-- [Documentation](https://solutions.trustradius.com/products/content-licensing/)
-- [Authentication](https://trustradius.freshdesk.com/support/solutions/articles/43000639047)
+#### Security (2)
 
-### TrustRadius Traffic Data API
+Authentication, trust centre, and vulnerability disclosure.
 
-Profile traffic reporting. GET /reports/traffic/products returns page views, visits and visitors per product per day alongside the matching category-level totals, so share-of-category is computable client-side. GET /reports/traffic/pages breaks the same window down by page type, page title and URL. Both accept ISO 8601 start-date/end-date filters, comma-separated product ids, skip/limit paging, and a format parameter for JSON or CSV.
+- [Trustradius Authentication](https://apis.io/security/trustradius/trustradius-authentication/)
+- [Trustradius Domain Security](https://apis.io/security/trustradius/trustradius-domain-security/)
 
-- **Human URL:** [https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api](https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api)
-- **Base URL:** `https://api.trustradius.com/v1`
+#### Plans and pricing (1)
 
-#### Tags
+Published plans, tiers and prices.
 
-- Analytics
-- Traffic
-- Reporting
+- [Trustradius Plans Pricing](https://apis.io/plans/trustradius/trustradius-plans-pricing/)
 
-#### Properties
+#### Rate limits (1)
 
-- [OpenAPI](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/openapi/trustradius-traffic-data-api-openapi.yml)
-- [Overlay](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/overlays/trustradius-traffic-data-overlay.yaml)
-- [AgentSkill](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/skills/trustradius-report-profile-traffic.md)
-- [APIReference](https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api)
-- [Documentation](https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api)
-- [Authentication](https://trustradius.freshdesk.com/support/solutions/articles/43000639047)
+Published request limits.
 
-### TrustRadius Legacy Visitor Insights API
+- [Trustradius Rate Limits](https://apis.io/rate-limits/trustradius/trustradius-rate-limits/)
 
-Identified-company reporting, tagged `Legacy` by TrustRadius in its own specification. GET /reports/visitor-insights/companies returns firmographics (name, SIC code, size, location, web and social handles) with visit counts; GET /reports/visitor-insights/pages adds page-level detail; GET /accounts/{account_id} drills into one company with its visitors and visits. Enabled per product — check isVisitorInsightsEnabled on the /product-ids response first. None of the three is marked deprecated and no replacement or Sunset date is published, so the Legacy label is a signal a machine cannot act on.
+#### FinOps (1)
 
-- **Human URL:** [https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api](https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api)
-- **Base URL:** `https://api.trustradius.com/v1`
+What the API costs to run, by operation.
 
-#### Tags
+- [Trustradius Finops](https://apis.io/finops/trustradius/trustradius-finops/)
 
-- Visitor Insights
-- Firmographics
-- Legacy
+## Where to find this API
 
-#### Properties
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
-- [OpenAPI](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/openapi/trustradius-legacy-api-openapi.yml)
-- [Overlay](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/overlays/trustradius-legacy-overlay.yaml)
-- [APIReference](https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api)
-- [Documentation](https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api)
-- [Authentication](https://trustradius.freshdesk.com/support/solutions/articles/43000639047)
+- [Website](https://www.trustradius.com/)
+- [Documentation](https://apidocs.trustradius.com/)
+- [Getting started](https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api)
+- [API reference](https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api)
+- [Pricing](https://solutions.trustradius.com/pricing/)
+- [Sign up](https://solutions.trustradius.com/claim-your-profile/)
+- [Support](https://trustradius.freshdesk.com/support/solutions)
+- [Blog](https://solutions.trustradius.com/feed/)
+- [Terms of service](https://www.trustradius.com/legal/terms-of-use)
+- [Privacy policy](https://www.trustradius.com/legal/privacy-policy)
+- [GitHub](https://github.com/trustradius)
 
-## Common Properties
+## API Evangelist rating
 
-- **OpenAPI** — [TrustRadius Public API (provider-published, complete)](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/openapi/_original/trustradius-api-openapi.yml)
-- **AgenticAccess** — [AgenticAccess](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/agentic-access/trustradius-agentic-access.yml)
-- **DomainSecurity** — [DomainSecurity](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/security/trustradius-domain-security.yml)
-- **Authentication** — [Authentication](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/authentication/trustradius-authentication.yml)
-- **Conventions** — [Conventions](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/conventions/trustradius-conventions.yml)
-- **ErrorCatalog** — [ErrorCatalog](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/errors/trustradius-problem-types.yml)
-- **Lifecycle** — [Lifecycle](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/lifecycle/trustradius-lifecycle.yml)
-- **Conformance** — [Conformance](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/conformance/trustradius-conformance.yml)
-- **DataModel** — [DataModel](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/data-model/trustradius-data-model.yml)
-- **Sandbox** — [Live Prism mock provisioned by the TrustRadius developer portal](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/sandbox/trustradius-sandbox.yml)
-- **Components** — [Components](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/components/trustradius-components.yml)
-- **Packages** — [Packages](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/packages/trustradius-packages.yml)
-- **LLMsTxt** — [LLMsTxt](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/llms/trustradius-llms.txt)
-- **AgentSkill** — [AgentSkill](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/skills/_index.yml)
-- **Vocabulary** — [Vocabulary](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/vocabulary/trustradius-vocabulary.yml)
-- **Examples** — [Request/response examples derived from the published OpenAPI (11, one per operation)](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/examples/trustradius-product-ids-get-example.json)
-- **JSONSchema** — [JSON Schema extracted from the published OpenAPI components (17 schemas)](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/json-schema/trustradius-TrustQuotes.json)
-- **JSONStructure** — [JSONStructure](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/json-structure/trustradius-trustquote-structure.json)
-- **JSONLD** — [JSONLD](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/json-ld/trustradius-context.jsonld)
-- **PostmanCollection** — [TrustRadius Public API (generated by API Evangelist from the published OpenAPI)](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/collections/trustradius-public-api.postman_collection.json)
-- **Plans** — [Plans](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/plans/trustradius-plans-pricing.yml)
-- **RateLimits** — [RateLimits](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/rate-limits/trustradius-rate-limits.yml)
-- **FinOps** — [FinOps](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/finops/trustradius-finops.yml)
-- **SpectralRules** — [Spectral Rules](https://raw.githubusercontent.com/api-evangelist/trustradius/refs/heads/main/rules/trustradius-rules.yml)
-- **Website** — [TrustRadius Website](https://www.trustradius.com/)
-- **DeveloperPortal** — [TrustRadius API Documentation](https://apidocs.trustradius.com/)
-- **Documentation** — [API Documentation](https://apidocs.trustradius.com/)
-- **APIReference** — [TrustRadius API Reference](https://apidocs.trustradius.com/docs/public-api/YXBpOjUxMzgzNjA-trust-radius-api)
-- **GettingStarted** — [TrustRadius API Overview — base URL, authentication and how to test](https://apidocs.trustradius.com/docs/public-api/ZG9jOjQ1Mg-trust-radius-api)
-- **FAQ** — [API FAQ — identifiers, rate limit, multi-id syntax](https://apidocs.trustradius.com/docs/public-api/ZG9jOjMzODE1NA-faq)
-- **Authentication** — [Accessing your TrustRadius API key](https://trustradius.freshdesk.com/support/solutions/articles/43000639047)
-- **Support** — [TrustRadius Help Center](https://trustradius.freshdesk.com/support/solutions)
-- **Portal** — [TrustRadius for Vendors](https://solutions.trustradius.com/)
-- **Login** — [TrustRadius Vendor Portal](https://vendor.trustradius.com/)
-- **SignUp** — [Claim Your Profile](https://solutions.trustradius.com/claim-your-profile/)
-- **Pricing** — [Pricing & Packaging](https://solutions.trustradius.com/pricing/)
-- **Integrations** — [Integrations](https://solutions.trustradius.com/integrations/)
-- **Products** — [Products](https://solutions.trustradius.com/products/)
-- **Contact** — [Contact TrustRadius](https://about.trustradius.com/contact-us)
-- **TermsOfService** — [Terms of Use](https://www.trustradius.com/legal/terms-of-use)
-- **PrivacyPolicy** — [Privacy Policy](https://www.trustradius.com/legal/privacy-policy)
-- **Blog** — [TrustRadius Vendor Blog](https://solutions.trustradius.com/feed/)
-- **Resources** — [TrustRadius Resources](https://solutions.trustradius.com/resources-overview)
-- **GitHubOrganization** — [TrustRadius on GitHub](https://github.com/trustradius)
-- **LinkedIn** — [TrustRadius on LinkedIn](https://www.linkedin.com/company/trustradius)
-- **X** — [TrustRadius on X (Twitter)](https://twitter.com/TrustRadius)
+**Kin Score 56.5** — strong · rubric 0.25.0 · scored 2026-10-23
 
-## Maintainers
+| Facet | Score |
+|---|---|
+| Discoverability | 66.1 |
+| Contract quality | 58.4 |
+| Contract governance | 31.8 |
+| Operational transparency | 26.3 |
+| Developer ergonomics | 67.3 |
+| Access clarity | 65.8 |
 
-**FN:** Kin Lane  
-**Email:** kin@apievangelist.com
+**Agent readiness 28.9** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | na |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | na |
+| Error Semantics | derived (partial credit) |
+| OpenAPI Examples | documented (partial credit) |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | na |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | partial |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 24.5** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/trustradius/](https://apis.io/providers/trustradius/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for TrustRadius: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/trustradius/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
